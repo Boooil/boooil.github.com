@@ -9,7 +9,7 @@
     
     <title>
         
-            Hello World |
+            图像特征匹配开发手记——Vol.1 |
         
         Boooil&#39;s Blog
     </title>
@@ -132,7 +132,7 @@
     <div class="article-content-container">
 
         <div class="article-title">
-            <span class="title-hover-animation">Hello World</span>
+            <span class="title-hover-animation">图像特征匹配开发手记——Vol.1</span>
         </div>
 
         
@@ -148,20 +148,9 @@
                     <div class="meta-info">
                         <div class="article-meta-info">
     <span class="article-date article-meta-item">
-        <i class="fas fa-edit"></i> 2021-01-21 20:05:59
+        <i class="fas fa-edit"></i> 2021-01-22 11:00:55
     </span>
     
-    
-        <span class="article-tags article-meta-item">
-            <i class="fas fa-tags"></i>
-            <ul>
-                
-                    <li>
-                        <a href="/tags/%E6%9D%82%E8%B0%88/">杂谈</a>
-                    </li>
-                
-            </ul>
-        </span>
     
 
     
@@ -176,10 +165,41 @@
         
 
         <div class="article-content markdown-body">
-            <p>Hello Blog，从无到有的个人网站<a id="more"></a></p>
-<p>果然无聊+好奇是第一生产力，昨天这个时候的我突发奇想，不想再把博客固定于CSDN上了，我想拥有一个属于我自己的博客，属于我自己的一片天地。<br>创建个人博客的过程同样也是学习的过程，程序员果然是这个世界上学习能力最快最强的物种之一了。<div align=center><img src="https://s3.ax1x.com/2021/01/21/s44y1s.jpg"/></div></p>
+            <h1 id="开发手记——Vol-1"><a href="#开发手记——Vol-1" class="headerlink" title="开发手记——Vol.1"></a>开发手记——Vol.1<a id="more"></a></h1><p><strong>完整的跑出SIFT图像特征匹配基本流程</strong></p>
 <hr>
-<p>那么！第一篇博客该写什么呢！我们就一起来回顾一下如何拥有一个高逼格的个人博客吧！<br>首先！我们既然不想用任何第三方软件，那么我们就得拥有一个属于我们自己的域名。当然有了域名还不够，我们知道要使一个网站正常运作，我们还得拥有一个服务器。<br><strong>这听起来就很麻烦好不好！！！</strong><br>所以我们选择到了GitHub仓库作为我们的域名和服务器，虽然域名格式固定，但是！<strong>它免费</strong>！<div align=center><img src="https://s3.ax1x.com/2021/01/21/s45Z4g.jpg" width="25%" height="25%"/></div><br>我们采用的是GitHub+Hexo博客架构，这个组合教程网上一抓一大把。<br>当我们历尽千辛万险，创建了GitHub仓库，搞定了Hexo架构，并且成功将本地的文件发布至GitHub仓库时，我们的个人博客，就大功告成了！<br>扒一扒别人的主题，换一换背景头图，CtrlC+CtrlV，一个像模像样的博客就初具规模了。<div align=center><img src="https://s3.ax1x.com/2021/01/21/s446cn.jpg" width="25%" height="25%"/></div></p>
+<p>北创+毕设项目，工程目标是做出一个基于SIFT的图像特征匹配并识别建筑物的系统，与GPS坐标结合，整个工程都是基于Android Studio平台和OpenCV Java SDK。</p>
+<p>参考了OpenCV SDK中的官方手册、教程文档以及网上的文章和博客。</p>
+<hr>
+<p>一个简单的相对完整的SIFT的匹配流程，包括一下几步：<strong>图片的预处理，特征点检测（detect），特征点提取（extractor），特征点匹配（match)</strong></p>
+<ul>
+<li><p><strong>图片预处理</strong></p>
+<p>图片在进行匹配之前的预处理，为此进行的是图片转为<strong>灰度图</strong>以及<strong>高斯模糊</strong>。</p>
+<p>为什么要进行灰度化？</p>
+<p>​ 最直接的原因就是减小计算量。包含色彩的图片，特征量，计算量会成指数倍数增加。比如一个点，灰度的话，就256个维度而已，但是如果算上RGB色彩的话，那就是1600万以上维度。</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">Imgproc.cvtColor(test1,test1_Gray,COLOR_BGR2GRAY);<span class="comment">//转化为灰度图</span></span><br></pre></td></tr></table></figure>
+<p>为什么要进行高斯模糊？</p>
+<p>​ 减少图像噪声以及降低细节层次。</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">Size Ksize = <span class="keyword">new</span> Size(<span class="number">5</span>,<span class="number">5</span>);</span><br><span class="line">GaussianBlur(test1_Gray,test1_Blurred,Ksize,<span class="number">0</span>);</span><br></pre></td></tr></table></figure>
+<p>高斯核的大小选择了5X5，当然可以选择10X10，测试得到数值越大模糊程度越明显，至于如何选择，应该是一个先验后验的问题。</p>
+</li>
+<li><p><strong>特征点检测</strong></p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">FeatureDetector SIFTdter = FeatureDetector.create(FeatureDetector.SIFT);<span class="comment">//创建特征监测</span></span><br><span class="line">MatOfKeyPoint kp1 = <span class="keyword">new</span> MatOfKeyPoint();<span class="comment">//特征点</span></span><br><span class="line">SIFTdter.detect(test1_Blurred,kp1);<span class="comment">//检测特征点</span></span><br></pre></td></tr></table></figure>
+<p>将特征点检测出来，放入KP1矩阵。这里特征点的检测方法有很多，比如常见的SIFT、SURF等等，这里我们选择经典的SIFT。</p>
+</li>
+<li><p><strong>特征点描述符提取</strong></p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">DescriptorExtractor descriptorExtractor=DescriptorExtractor.create(DescriptorExtractor.SIFT);<span class="comment">//描述子提取</span></span><br><span class="line">descriptorExtractor.compute(test1_Blurred,kp1,descriptors1);<span class="comment">//计算描述子</span></span><br></pre></td></tr></table></figure>
+<p>这里也选择SIFT的描述符提取方法，计算描述符。</p>
+</li>
+<li><p><strong>特征点匹配</strong></p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">DescriptorMatcher descriptorMatcher=DescriptorMatcher.create(DescriptorMatcher.FLANNBASED);<span class="comment">//描述子匹配</span></span><br><span class="line">MatOfDMatch matches=<span class="keyword">new</span> MatOfDMatch();</span><br><span class="line">descriptorMatcher.match(descriptors1,descriptors2,matches);<span class="comment">//进行匹配</span></span><br></pre></td></tr></table></figure>
+<p>这里的匹配方法选择的是FLANNBASED（最近邻近似匹配），除了这个还有Brute Force匹配等等。</p>
+</li>
+</ul>
+<hr>
+<p>经过以上几步，我们会得到一个<strong>MatOfDMatch</strong>类型的变量matches，这个就是已经用SIFT匹配好的匹配矩阵。</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">Features2d.drawMatches(im1,key1,im2,key2,matches,out);</span><br></pre></td></tr></table></figure>
+<p>我们可以用drawmathches这个函数将两张图片匹配的点进行连线，直观的看出二者的匹配情况。</p>
+<p>但是我们此时会发现一个问题，那就是好像匹配的点有点多？两张不相关的图片也有很多的匹配点？这就说明，仅仅依靠SIFT算法，是无法很好的得到我们想要的“图像识别”的效果的，所以我们在此基础上要对SIFT算法进行优化。<div align=center><img src="https://s3.ax1x.com/2021/01/21/s446cn.jpg" width="25%" height="25%"/></div></p>
 
         </div>
 
@@ -188,21 +208,21 @@
         
             <div class="article-nav">
                 
-                    <div class="article-prev">
-                        <a class="prev"
-                           rel="prev"
-                           href="/2021/01/22/2021-1-22/"
+                
+                    <div class="article-next">
+                        <a class="next"
+                           rel="next"
+                           href="/2021/01/21/2021-1-21/"
                         >
-                            <span class="left arrow-icon flex-center">
-                              <i class="fas fa-chevron-left"></i>
-                            </span>
                             <span class="title flex-center">
-                                <span class="post-nav-title-item">图像特征匹配开发手记——Vol.1</span>
-                                <span class="post-nav-item">上一篇</span>
+                                <span class="post-nav-title-item">Hello World</span>
+                                <span class="post-nav-item">下一篇</span>
+                            </span>
+                            <span class="right arrow-icon flex-center">
+                              <i class="fas fa-chevron-right"></i>
                             </span>
                         </a>
                     </div>
-                
                 
             </div>
         
