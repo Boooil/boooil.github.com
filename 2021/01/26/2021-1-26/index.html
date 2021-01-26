@@ -20,24 +20,22 @@
     <meta name="keywords" content="hexo,hexo-theme,hexo-blog">
     
     <meta name="description" content="">
-    <meta name="description" content="完整的跑出SIFT图像特征匹配基本流程">
+    <meta name="description" content="算法的后续优化">
 <meta property="og:type" content="article">
-<meta property="og:title" content="图像特征匹配开发手记Vol_1">
-<meta property="og:url" content="http://boooil.github.io/2021/01/22/2021-1-22/index.html">
+<meta property="og:title" content="图像特征匹配开发手记Vol_3">
+<meta property="og:url" content="http://boooil.github.io/2021/01/26/2021-1-26/index.html">
 <meta property="og:site_name" content="我的博客">
-<meta property="og:description" content="完整的跑出SIFT图像特征匹配基本流程">
+<meta property="og:description" content="算法的后续优化">
 <meta property="og:locale" content="zh_CN">
-<meta property="og:image" content="https://s3.ax1x.com/2021/01/21/s446cn.jpg">
-<meta property="article:published_time" content="2021-01-22T03:00:55.000Z">
-<meta property="article:modified_time" content="2021-01-23T12:17:52.825Z">
+<meta property="article:published_time" content="2021-01-26T03:29:31.000Z">
+<meta property="article:modified_time" content="2021-01-26T04:02:34.302Z">
 <meta property="article:author" content="Boooil">
 <meta property="article:tag" content="开发">
 <meta name="twitter:card" content="summary">
-<meta name="twitter:image" content="https://s3.ax1x.com/2021/01/21/s446cn.jpg">
     <meta http-equiv="Cache-control" content="no-cache">
     <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1"/>
     
-    <title>图像特征匹配开发手记Vol_1 · Boooil&#39;s BLOG</title>
+    <title>图像特征匹配开发手记Vol_3 · Boooil&#39;s BLOG</title>
     <style type="text/css">
     @font-face {
         font-family: 'Oswald-Regular';
@@ -232,7 +230,7 @@
                 <a href="/" >Boooil&#39;s BLOG.</a>
             </div>
             <div class="post-title">
-                <a href="#" class="post-name">图像特征匹配开发手记Vol_1</a>
+                <a href="#" class="post-name">图像特征匹配开发手记Vol_3</a>
             </div>
     </div>
     
@@ -262,7 +260,7 @@ height:50vh;
         <h1 class="intro-title">
             <!-- 主页  -->
             
-            图像特征匹配开发手记Vol_1
+            图像特征匹配开发手记Vol_3
             <!-- 404 -->
             
         </h1>
@@ -288,7 +286,7 @@ height:50vh;
                 
                 <div class="post-intro-meta">
                     <span class="post-intro-calander iconfont-archer">&#xe676;</span>
-                    <span class="post-intro-time">2021/01/22</span>
+                    <span class="post-intro-time">2021/01/26</span>
                     
                     <span class="shareWrapper">
                         <span class="iconfont-archer shareIcon">&#xe71d;</span>
@@ -407,40 +405,47 @@ height:50vh;
         <div class="container container-unloaded">
             <main class="main post-page">
     <article class="article-entry">
-        <h3 id="完整的跑出SIFT图像特征匹配基本流程"><a href="#完整的跑出SIFT图像特征匹配基本流程" class="headerlink" title="完整的跑出SIFT图像特征匹配基本流程"></a><strong>完整的跑出SIFT图像特征匹配基本流程</strong><a id="more"></a></h3><hr>
-<p>北创+毕设项目，工程目标是做出一个基于SIFT的图像特征匹配并识别建筑物的系统，与GPS坐标结合，整个工程都是基于Android Studio平台和OpenCV Java SDK。</p>
-<p>参考了OpenCV SDK中的官方手册、教程文档以及网上的文章和博客。</p>
-<hr>
-<p>一个简单的相对完整的SIFT的匹配流程，包括一下几步：<strong>图片的预处理，特征点检测（detect），特征点提取（extractor），特征点匹配（match)</strong></p>
+        <h3 id="算法的后续优化"><a href="#算法的后续优化" class="headerlink" title="算法的后续优化"></a>算法的后续优化<a id="more"></a></h3><hr>
 <ul>
-<li><p><strong>图片预处理</strong></p>
-<p>图片在进行匹配之前的预处理，为此进行的是图片转为<strong>灰度图</strong>以及<strong>高斯模糊</strong>。</p>
-<p>为什么要进行灰度化？</p>
-<p>​ 最直接的原因就是减小计算量。包含色彩的图片，特征量，计算量会成指数倍数增加。比如一个点，灰度的话，就256个维度而已，但是如果算上RGB色彩的话，那就是1600万以上维度。</p>
-<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">Imgproc.cvtColor(test1,test1_Gray,COLOR_BGR2GRAY);<span class="comment">//转化为灰度图</span></span><br></pre></td></tr></table></figure>
-<p>为什么要进行高斯模糊？</p>
-<p>​ 减少图像噪声以及降低细节层次。</p>
-<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">Size Ksize = <span class="keyword">new</span> Size(<span class="number">5</span>,<span class="number">5</span>);</span><br><span class="line">GaussianBlur(test1_Gray,test1_Blurred,Ksize,<span class="number">0</span>);</span><br></pre></td></tr></table></figure>
-<p>高斯核的大小选择了5X5，当然可以选择10X10，测试得到数值越大模糊程度越明显，至于如何选择，应该是一个先验后验的问题。</p>
-</li>
-<li><p><strong>特征点检测</strong></p>
-<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">FeatureDetector SIFTdter = FeatureDetector.create(FeatureDetector.SIFT);<span class="comment">//创建特征监测</span></span><br><span class="line">MatOfKeyPoint kp1 = <span class="keyword">new</span> MatOfKeyPoint();<span class="comment">//特征点</span></span><br><span class="line">SIFTdter.detect(test1_Blurred,kp1);<span class="comment">//检测特征点</span></span><br></pre></td></tr></table></figure>
-<p>将特征点检测出来，放入KP1矩阵。这里特征点的检测方法有很多，比如常见的SIFT、SURF等等，这里我们选择经典的SIFT。</p>
-</li>
-<li><p><strong>特征点描述符提取</strong></p>
-<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">DescriptorExtractor descriptorExtractor=DescriptorExtractor.create(DescriptorExtractor.SIFT);<span class="comment">//描述子提取</span></span><br><span class="line">descriptorExtractor.compute(test1_Blurred,kp1,descriptors1);<span class="comment">//计算描述子</span></span><br></pre></td></tr></table></figure>
-<p>这里也选择SIFT的描述符提取方法，计算描述符。</p>
-</li>
-<li><p><strong>特征点匹配</strong></p>
-<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">DescriptorMatcher descriptorMatcher=DescriptorMatcher.create(DescriptorMatcher.FLANNBASED);<span class="comment">//描述子匹配</span></span><br><span class="line">MatOfDMatch matches=<span class="keyword">new</span> MatOfDMatch();</span><br><span class="line">descriptorMatcher.match(descriptors1,descriptors2,matches);<span class="comment">//进行匹配</span></span><br></pre></td></tr></table></figure>
-<p>这里的匹配方法选择的是FLANNBASED（最近邻近似匹配），除了这个还有Brute Force匹配等等。</p>
+<li><p>Bitmap中加载函数 decodeStream()和decodeResource()的区别</p>
+<p>之前加载用的函数一直是decodeResource()，导致图片处理速度一直很慢，让我一度认为是SIFT算法本身的问题，但是其实不是。</p>
+<p>decodeStream()和decodeResource()，这两个api的最大区别在于最后解析出来的Options的inDensity和inTargetDensity（图像密度），即前一个decodeResource会以bitmap的密度做为绘制密度，而decodeStream直接以屏幕默认密度做为绘制密度。所以如果当图片密度远大于屏幕密度时会导致decodeResource解析出来的Bitmap很大，导致机器很卡。</p>
+<p>所以当我换成decodeStream()时匹配速度明显蹭的一下就上去了，解决了一个很要紧的问题。</p>
 </li>
 </ul>
 <hr>
-<p>经过以上几步，我们会得到一个<strong>MatOfDMatch</strong>类型的变量matches，这个就是已经用SIFT匹配好的匹配矩阵。</p>
-<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">Features2d.drawMatches(im1,key1,im2,key2,matches,out);</span><br></pre></td></tr></table></figure>
-<p>我们可以用drawmathches这个函数将两张图片匹配的点进行连线，直观的看出二者的匹配情况。</p>
-<p>但是我们此时会发现一个问题，那就是好像匹配的点有点多？两张不相关的图片也有很多的匹配点？这就说明，仅仅依靠SIFT算法，是无法很好的得到我们想要的“图像识别”的效果的，所以我们在此基础上要对SIFT算法进行优化。<div align=center><img src="https://s3.ax1x.com/2021/01/21/s446cn.jpg" width="25%" height="25%"/></div></p>
+<ul>
+<li><p>RANSAC的小优化</p>
+<p>之前两张图片的评价指标是RANSAC提纯后的match中最小的distance，但是在测试中发现，最小值作为评价指标有时候并不准确，于是便改用平均值的办法。</p>
+<center>
+  <table border="1">
+      <tr>
+          <th>建筑物</th>
+          <th>distance</th>
+      </tr>
+      <tr>
+          <td>图书馆2和图书馆1</td>
+          <td> 0.04026</td>
+      </tr>
+      <tr>
+          <td>男生楼1和图书馆1</td>
+          <td> 0.0735</td>
+      </tr>
+      <tr>
+          <td>体育馆1和图书馆1</td>
+          <td> 0.0767</td>
+      </tr>
+      <tr>
+          <td>一教和图书馆1</td>
+          <td> 0.0735</td>
+      </tr>
+  </table>
+</center>
+
+<p>距离越小越好，从测试的几组样例来看，效果还是不错的。</p>
+</li>
+</ul>
+<hr>
 
     </article>
     <!-- license  -->
@@ -449,17 +454,12 @@ height:50vh;
     <ul class="post-paginator">
         <li class="next">
             
-                <div class="nextSlogan">Next Post</div>
-                <a href= "/2021/01/23/2021-1-23/" title= "Boil的小玩意儿分享Vol_1">
-                    <div class="nextTitle">Boil的小玩意儿分享Vol_1</div>
-                </a>
-            
         </li>
         <li class="previous">
             
                 <div class="prevSlogan">Previous Post</div>
-                <a href= "/2021/01/21/2021-1-21/" title= "Hello World">
-                    <div class="prevTitle">Hello World</div>
+                <a href= "/2021/01/24/2021-1-24/" title= "图像特征匹配开发手记Vol_2">
+                    <div class="prevTitle">图像特征匹配开发手记Vol_2</div>
                 </a>
             
         </li>
