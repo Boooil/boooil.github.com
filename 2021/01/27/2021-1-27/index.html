@@ -20,22 +20,24 @@
     <meta name="keywords" content="hexo,hexo-theme,hexo-blog">
     
     <meta name="description" content="">
-    <meta name="description" content="算法的后续优化">
+    <meta name="description" content="引入GPS坐标">
 <meta property="og:type" content="article">
-<meta property="og:title" content="图像特征匹配开发手记Vol_3">
-<meta property="og:url" content="http://boooil.github.io/2021/01/26/2021-1-26/index.html">
+<meta property="og:title" content="图像特征匹配开发手记Vol_4">
+<meta property="og:url" content="http://boooil.github.io/2021/01/27/2021-1-27/index.html">
 <meta property="og:site_name" content="我的博客">
-<meta property="og:description" content="算法的后续优化">
+<meta property="og:description" content="引入GPS坐标">
 <meta property="og:locale" content="zh_CN">
-<meta property="article:published_time" content="2021-01-26T03:29:31.000Z">
-<meta property="article:modified_time" content="2021-01-26T04:02:34.302Z">
+<meta property="og:image" content="https://s3.ax1x.com/2021/01/27/sxedRU.png">
+<meta property="article:published_time" content="2021-01-27T03:59:15.000Z">
+<meta property="article:modified_time" content="2021-01-27T04:02:13.688Z">
 <meta property="article:author" content="Boooil">
 <meta property="article:tag" content="开发">
 <meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="https://s3.ax1x.com/2021/01/27/sxedRU.png">
     <meta http-equiv="Cache-control" content="no-cache">
     <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1"/>
     
-    <title>图像特征匹配开发手记Vol_3 · Boooil&#39;s BLOG</title>
+    <title>图像特征匹配开发手记Vol_4 · Boooil&#39;s BLOG</title>
     <style type="text/css">
     @font-face {
         font-family: 'Oswald-Regular';
@@ -230,7 +232,7 @@
                 <a href="/" >Boooil&#39;s BLOG.</a>
             </div>
             <div class="post-title">
-                <a href="#" class="post-name">图像特征匹配开发手记Vol_3</a>
+                <a href="#" class="post-name">图像特征匹配开发手记Vol_4</a>
             </div>
     </div>
     
@@ -260,7 +262,7 @@ height:50vh;
         <h1 class="intro-title">
             <!-- 主页  -->
             
-            图像特征匹配开发手记Vol_3
+            图像特征匹配开发手记Vol_4
             <!-- 404 -->
             
         </h1>
@@ -286,7 +288,7 @@ height:50vh;
                 
                 <div class="post-intro-meta">
                     <span class="post-intro-calander iconfont-archer">&#xe676;</span>
-                    <span class="post-intro-time">2021/01/26</span>
+                    <span class="post-intro-time">2021/01/27</span>
                     
                     <span class="shareWrapper">
                         <span class="iconfont-archer shareIcon">&#xe71d;</span>
@@ -405,47 +407,21 @@ height:50vh;
         <div class="container container-unloaded">
             <main class="main post-page">
     <article class="article-entry">
-        <h3 id="算法的后续优化"><a href="#算法的后续优化" class="headerlink" title="算法的后续优化"></a>算法的后续优化<a id="more"></a></h3><hr>
-<ul>
-<li><p>Bitmap中加载函数 decodeStream()和decodeResource()的区别</p>
-<p>之前加载用的函数一直是decodeResource()，导致图片处理速度一直很慢，让我一度认为是SIFT算法本身的问题，但是其实不是。</p>
-<p>decodeStream()和decodeResource()，这两个api的最大区别在于最后解析出来的Options的inDensity和inTargetDensity（图像密度），即前一个decodeResource会以bitmap的密度做为绘制密度，而decodeStream直接以屏幕默认密度做为绘制密度。所以如果当图片密度远大于屏幕密度时会导致decodeResource解析出来的Bitmap很大，导致机器很卡。</p>
-<p>所以当我换成decodeStream()时匹配速度明显蹭的一下就上去了，解决了一个很要紧的问题。</p>
-</li>
-</ul>
-<hr>
-<ul>
-<li><p>RANSAC的小优化</p>
-<p>之前两张图片的评价指标是RANSAC提纯后的match中最小的distance，但是在测试中发现，最小值作为评价指标有时候并不准确，于是便改用平均值的办法。</p>
+        <h3 id="引入GPS坐标"><a href="#引入GPS坐标" class="headerlink" title="引入GPS坐标"></a>引入GPS坐标<a id="more"></a></h3><hr>
+<p>由于建筑物两两之间存在相似的特点，所以将GPS坐标与特征识别结合，以获取更加精确的匹配结果。</p>
+<p>这个方法适用于用户实时在建筑物周围进行拍摄并识别，并不适用于用户将一张现成的照片用于识别。</p>
+<p>首先，为了减小匹配的数量，将已知区域进行分片划分。为了简单起见，我都是以矩形作为区域的形状。</p>
 <center>
-  <table border="1">
-      <tr>
-          <th>建筑物</th>
-          <th>distance</th>
-      </tr>
-      <tr>
-          <td>图书馆2和图书馆1</td>
-          <td> 0.04026</td>
-      </tr>
-      <tr>
-          <td>男生楼1和图书馆1</td>
-          <td> 0.0735</td>
-      </tr>
-      <tr>
-          <td>体育馆1和图书馆1</td>
-          <td> 0.0767</td>
-      </tr>
-      <tr>
-          <td>一教和图书馆1</td>
-          <td> 0.0735</td>
-      </tr>
-  </table>
+    <img src="https://s3.ax1x.com/2021/01/27/sxedRU.png">
 </center>
 
-<p>距离越小越好，从测试的几组样例来看，效果还是不错的。</p>
-</li>
-</ul>
+<p>接着，根据当前定位所返回的坐标，得到用户所在的区域。</p>
+<p>判断的方法，目前写的很简单，就是看一个点是否在矩形中。</p>
+<p>比如用户在1区，1区可以识别的建筑物有信电楼、工院，所以在进行数据库遍历匹配的时候只会和相关建筑物的数据库资料进行比对，这样便提高了匹配速度。</p>
+<p>当然这种方法的缺陷就是如果用户不在相关的范围内，识别就会发生错误。</p>
 <hr>
+<p>引入坐标之后的流程便是：</p>
+<p>获取当前坐标，判断所在区域，获取待检测图片，将待检测图片和区域内图片进行匹配比对，找出得分最好的建筑，返回匹配结果</p>
 
     </article>
     <!-- license  -->
@@ -454,17 +430,12 @@ height:50vh;
     <ul class="post-paginator">
         <li class="next">
             
-                <div class="nextSlogan">Next Post</div>
-                <a href= "/2021/01/27/2021-1-27/" title= "图像特征匹配开发手记Vol_4">
-                    <div class="nextTitle">图像特征匹配开发手记Vol_4</div>
-                </a>
-            
         </li>
         <li class="previous">
             
                 <div class="prevSlogan">Previous Post</div>
-                <a href= "/2021/01/24/2021-1-24/" title= "图像特征匹配开发手记Vol_2">
-                    <div class="prevTitle">图像特征匹配开发手记Vol_2</div>
+                <a href= "/2021/01/26/2021-1-26/" title= "图像特征匹配开发手记Vol_3">
+                    <div class="prevTitle">图像特征匹配开发手记Vol_3</div>
                 </a>
             
         </li>
