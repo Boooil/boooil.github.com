@@ -1,0 +1,752 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+    <!-- title -->
+
+
+
+
+<!-- keywords -->
+
+
+
+
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no" >
+    <meta name="author" content="Boooil">
+    <meta name="renderer" content="webkit">
+    <meta name="copyright" content="Boooil">
+    
+    <meta name="keywords" content="hexo,hexo-theme,hexo-blog">
+    
+    <meta name="description" content="">
+    <meta name="description" content="功能整合">
+<meta property="og:type" content="article">
+<meta property="og:title" content="图像特征匹配开发手记Vol_5">
+<meta property="og:url" content="http://boooil.github.io/2021/01/28/2021-1-28/index.html">
+<meta property="og:site_name" content="我的博客">
+<meta property="og:description" content="功能整合">
+<meta property="og:locale" content="zh_CN">
+<meta property="article:published_time" content="2021-01-28T13:03:26.000Z">
+<meta property="article:modified_time" content="2021-01-28T13:05:47.131Z">
+<meta property="article:author" content="Boooil">
+<meta property="article:tag" content="开发">
+<meta name="twitter:card" content="summary">
+    <meta http-equiv="Cache-control" content="no-cache">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1"/>
+    
+    <title>图像特征匹配开发手记Vol_5 · Boooil&#39;s BLOG</title>
+    <style type="text/css">
+    @font-face {
+        font-family: 'Oswald-Regular';
+        src: url("/font/Oswald-Regular.ttf");
+    }
+
+    body {
+        margin: 0;
+    }
+
+    header,
+    footer,
+    .back-top,
+    .sidebar,
+    .container,
+    .site-intro-meta,
+    .toc-wrapper {
+        display: none;
+    }
+
+    .site-intro {
+        position: relative;
+        z-index: 3;
+        width: 100%;
+        /* height: 50vh; */
+        overflow: hidden;
+    }
+
+    .site-intro-placeholder {
+        position: absolute;
+        z-index: -2;
+        top: 0;
+        left: 0;
+        width: calc(100% + 300px);
+        height: 100%;
+        background: repeating-linear-gradient(-45deg, #444 0, #444 80px, #333 80px, #333 160px);
+        background-position: center center;
+        transform: translate3d(-226px, 0, 0);
+        animation: gradient-move 2.5s ease-out 0s infinite;
+    }
+
+    @keyframes gradient-move {
+        0% {
+            transform: translate3d(-226px, 0, 0);
+        }
+        100% {
+            transform: translate3d(0, 0, 0);
+        }
+    }
+
+</style>
+
+    <link rel="preload" href= "/css/style.css?v=20180824" as="style" onload="this.onload=null;this.rel='stylesheet'" />
+    <link rel="stylesheet" href= "/css/mobile.css?v=20180824" media="(max-width: 980px)">
+    
+    <link rel="preload" href="https://cdnjs.cloudflare.com/ajax/libs/fancybox/3.2.5/jquery.fancybox.min.css" as="style" onload="this.onload=null;this.rel='stylesheet'" />
+    
+    <!-- /*! loadCSS. [c]2017 Filament Group, Inc. MIT License */
+/* This file is meant as a standalone workflow for
+- testing support for link[rel=preload]
+- enabling async CSS loading in browsers that do not support rel=preload
+- applying rel preload css once loaded, whether supported or not.
+*/ -->
+<script>
+(function( w ){
+	"use strict";
+	// rel=preload support test
+	if( !w.loadCSS ){
+		w.loadCSS = function(){};
+	}
+	// define on the loadCSS obj
+	var rp = loadCSS.relpreload = {};
+	// rel=preload feature support test
+	// runs once and returns a function for compat purposes
+	rp.support = (function(){
+		var ret;
+		try {
+			ret = w.document.createElement( "link" ).relList.supports( "preload" );
+		} catch (e) {
+			ret = false;
+		}
+		return function(){
+			return ret;
+		};
+	})();
+
+	// if preload isn't supported, get an asynchronous load by using a non-matching media attribute
+	// then change that media back to its intended value on load
+	rp.bindMediaToggle = function( link ){
+		// remember existing media attr for ultimate state, or default to 'all'
+		var finalMedia = link.media || "all";
+
+		function enableStylesheet(){
+			link.media = finalMedia;
+		}
+
+		// bind load handlers to enable media
+		if( link.addEventListener ){
+			link.addEventListener( "load", enableStylesheet );
+		} else if( link.attachEvent ){
+			link.attachEvent( "onload", enableStylesheet );
+		}
+
+		// Set rel and non-applicable media type to start an async request
+		// note: timeout allows this to happen async to let rendering continue in IE
+		setTimeout(function(){
+			link.rel = "stylesheet";
+			link.media = "only x";
+		});
+		// also enable media after 3 seconds,
+		// which will catch very old browsers (android 2.x, old firefox) that don't support onload on link
+		setTimeout( enableStylesheet, 3000 );
+	};
+
+	// loop through link elements in DOM
+	rp.poly = function(){
+		// double check this to prevent external calls from running
+		if( rp.support() ){
+			return;
+		}
+		var links = w.document.getElementsByTagName( "link" );
+		for( var i = 0; i < links.length; i++ ){
+			var link = links[ i ];
+			// qualify links to those with rel=preload and as=style attrs
+			if( link.rel === "preload" && link.getAttribute( "as" ) === "style" && !link.getAttribute( "data-loadcss" ) ){
+				// prevent rerunning on link
+				link.setAttribute( "data-loadcss", true );
+				// bind listeners to toggle media back
+				rp.bindMediaToggle( link );
+			}
+		}
+	};
+
+	// if unsupported, run the polyfill
+	if( !rp.support() ){
+		// run once at least
+		rp.poly();
+
+		// rerun poly on an interval until onload
+		var run = w.setInterval( rp.poly, 500 );
+		if( w.addEventListener ){
+			w.addEventListener( "load", function(){
+				rp.poly();
+				w.clearInterval( run );
+			} );
+		} else if( w.attachEvent ){
+			w.attachEvent( "onload", function(){
+				rp.poly();
+				w.clearInterval( run );
+			} );
+		}
+	}
+
+
+	// commonjs
+	if( typeof exports !== "undefined" ){
+		exports.loadCSS = loadCSS;
+	}
+	else {
+		w.loadCSS = loadCSS;
+	}
+}( typeof global !== "undefined" ? global : this ) );
+</script>
+
+    <link rel="icon" href= "/assets/icon.ico" />
+    <link rel="preload" href="https://cdn.jsdelivr.net/npm/webfontloader@1.6.28/webfontloader.min.js" as="script" />
+    <link rel="preload" href="https://cdn.jsdelivr.net/npm/jquery@3.3.1/dist/jquery.min.js" as="script" />
+    <link rel="preload" href="/scripts/main.js" as="script" />
+    <link rel="preload" as="font" href="/font/Oswald-Regular.ttf" crossorigin>
+    <link rel="preload" as="font" href="https://at.alicdn.com/t/font_327081_1dta1rlogw17zaor.woff" crossorigin>
+    
+    <!-- fancybox -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/fancybox/3.2.5/jquery.fancybox.min.js" defer></script>
+    <!-- 百度统计  -->
+    
+    <!-- 谷歌统计  -->
+    
+<meta name="generator" content="Hexo 5.3.0"></head>
+
+    
+        <body class="post-body">
+    
+    
+<header class="header">
+
+    <div class="read-progress"></div>
+    <div class="header-sidebar-menu">&#xe775;</div>
+    <!-- post页的toggle banner  -->
+    
+    <div class="banner">
+            <div class="blog-title">
+                <a href="/" >Boooil&#39;s BLOG.</a>
+            </div>
+            <div class="post-title">
+                <a href="#" class="post-name">图像特征匹配开发手记Vol_5</a>
+            </div>
+    </div>
+    
+    <a class="home-link" href=/>Boooil's BLOG.</a>
+</header>
+    <div class="wrapper">
+        <div class="site-intro" style="
+
+
+
+
+
+
+
+height:50vh;
+">
+    
+    <!-- 主页  -->
+    
+    
+    <!-- 404页  -->
+            
+    <div class="site-intro-placeholder"></div>
+    <div class="site-intro-img" style="background-image: url(/intro/post-bg2.jpg)"></div>
+    <div class="site-intro-meta">
+        <!-- 标题  -->
+        <h1 class="intro-title">
+            <!-- 主页  -->
+            
+            图像特征匹配开发手记Vol_5
+            <!-- 404 -->
+            
+        </h1>
+        <!-- 副标题 -->
+        <p class="intro-subtitle">
+            <!-- 主页副标题  -->
+            
+            
+            <!-- 404 -->
+            
+        </p>
+        <!-- 文章页meta -->
+        
+            <div class="post-intros">
+                <!-- 文章页标签  -->
+                
+                    <div class= post-intro-tags >
+    
+        <a class="post-tag" href="javascript:void(0);" data-tags = "开发">开发</a>
+    
+</div>
+                
+                
+                <div class="post-intro-meta">
+                    <span class="post-intro-calander iconfont-archer">&#xe676;</span>
+                    <span class="post-intro-time">2021/01/28</span>
+                    
+                    <span class="shareWrapper">
+                        <span class="iconfont-archer shareIcon">&#xe71d;</span>
+                        <span class="shareText">Share</span>
+                        <ul class="shareList">
+                            <li class="iconfont-archer share-qr" data-type="qr">&#xe75b;
+                                <div class="share-qrcode"></div>
+                            </li>
+                            <li class="iconfont-archer" data-type="weibo">&#xe619;</li>
+                            <li class="iconfont-archer" data-type="qzone">&#xe62e;</li>
+                            <li class="iconfont-archer" data-type="twitter">&#xe634;</li>
+                            <li class="iconfont-archer" data-type="facebook">&#xe67a;</li>
+                        </ul>
+                    </span>
+                </div>
+            </div>
+        
+    </div>
+</div>
+        <script>
+ 
+  // get user agent
+  var browser = {
+    versions: function () {
+      var u = window.navigator.userAgent;
+      return {
+        userAgent: u,
+        trident: u.indexOf('Trident') > -1, //IE内核
+        presto: u.indexOf('Presto') > -1, //opera内核
+        webKit: u.indexOf('AppleWebKit') > -1, //苹果、谷歌内核
+        gecko: u.indexOf('Gecko') > -1 && u.indexOf('KHTML') == -1, //火狐内核
+        mobile: !!u.match(/AppleWebKit.*Mobile.*/), //是否为移动终端
+        ios: !!u.match(/\(i[^;]+;( U;)? CPU.+Mac OS X/), //ios终端
+        android: u.indexOf('Android') > -1 || u.indexOf('Linux') > -1, //android终端或者uc浏览器
+        iPhone: u.indexOf('iPhone') > -1 || u.indexOf('Mac') > -1, //是否为iPhone或者安卓QQ浏览器
+        iPad: u.indexOf('iPad') > -1, //是否为iPad
+        webApp: u.indexOf('Safari') == -1, //是否为web应用程序，没有头部与底部
+        weixin: u.indexOf('MicroMessenger') == -1, //是否为微信浏览器
+        uc: u.indexOf('UCBrowser') > -1 //是否为android下的UC浏览器
+      };
+    }()
+  }
+  console.log("userAgent:" + browser.versions.userAgent);
+
+  // callback
+  function fontLoaded() {
+    console.log('font loaded');
+    if (document.getElementsByClassName('site-intro-meta')) {
+      document.getElementsByClassName('intro-title')[0].classList.add('intro-fade-in');
+      document.getElementsByClassName('intro-subtitle')[0].classList.add('intro-fade-in');
+      var postIntros = document.getElementsByClassName('post-intros')[0]
+      if (postIntros) {
+        postIntros.classList.add('post-fade-in');
+      }
+    }
+  }
+
+  // UC不支持跨域，所以直接显示
+  function asyncCb(){
+    if (browser.versions.uc) {
+      console.log("UCBrowser");
+      fontLoaded();
+    } else {
+      WebFont.load({
+        custom: {
+          families: ['Oswald-Regular']
+        },
+        loading: function () {  //所有字体开始加载
+          // console.log('loading');
+        },
+        active: function () {  //所有字体已渲染
+          fontLoaded();
+        },
+        inactive: function () { //字体预加载失败，无效字体或浏览器不支持加载
+          console.log('inactive: timeout');
+          fontLoaded();
+        },
+        timeout: 5000 // Set the timeout to two seconds
+      });
+    }
+  }
+
+  function asyncErr(){
+    console.warn('script load from CDN failed, will load local script')
+  }
+
+  // load webfont-loader async, and add callback function
+  function async(u, cb, err) {
+    var d = document, t = 'script',
+      o = d.createElement(t),
+      s = d.getElementsByTagName(t)[0];
+    o.src = u;
+    if (cb) { o.addEventListener('load', function (e) { cb(null, e); }, false); }
+    if (err) { o.addEventListener('error', function (e) { err(null, e); }, false); }
+    s.parentNode.insertBefore(o, s);
+  }
+
+  var asyncLoadWithFallBack = function(arr, success, reject) {
+      var currReject = function(){
+        reject()
+        arr.shift()
+        if(arr.length)
+          async(arr[0], success, currReject)
+        }
+
+      async(arr[0], success, currReject)
+  }
+
+  asyncLoadWithFallBack([
+    "https://cdn.jsdelivr.net/npm/webfontloader@1.6.28/webfontloader.min.js", 
+    "https://cdn.bootcss.com/webfont/1.6.28/webfontloader.js",
+    "/lib/webfontloader.min.js"
+  ], asyncCb, asyncErr)
+</script>        
+        <img class="loading" src="/assets/loading.svg" style="display: block; margin: 6rem auto 0 auto; width: 6rem; height: 6rem;" />
+        <div class="container container-unloaded">
+            <main class="main post-page">
+    <article class="article-entry">
+        <h3 id="功能整合"><a href="#功能整合" class="headerlink" title="功能整合"></a>功能整合<a id="more"></a></h3><hr>
+<p>至此基本的功能部件已经撰写的差不多了，接下来就是将这些基本功能封装到类中。</p>
+<ul>
+<li><p><strong>District类</strong></p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">District</span> </span>&#123;</span><br><span class="line">    <span class="keyword">public</span> <span class="keyword">double</span> Left;</span><br><span class="line">    <span class="keyword">public</span> <span class="keyword">double</span> Right;</span><br><span class="line">    <span class="keyword">public</span> <span class="keyword">double</span> Top;</span><br><span class="line">    <span class="keyword">public</span> <span class="keyword">double</span> Bottom;</span><br><span class="line"></span><br><span class="line">    District(<span class="keyword">double</span> left,<span class="keyword">double</span> right,<span class="keyword">double</span> top,<span class="keyword">double</span> bottom)&#123;</span><br><span class="line">        <span class="keyword">this</span>.Left = left;</span><br><span class="line">        <span class="keyword">this</span>.Right = right;</span><br><span class="line">        <span class="keyword">this</span>.Top = top;</span><br><span class="line">        <span class="keyword">this</span>.Bottom = bottom;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>区域的结构体类。</p>
+<p>四个成员变量分别代表了矩形的边框位置信息。</p>
+<p>通过四个位置来构造district类。</p>
+</li>
+<li><p><strong>AreaSearch类</strong></p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">AreaSearch</span> </span>&#123;</span><br><span class="line">    <span class="comment">//创建区域</span></span><br><span class="line">    <span class="function"><span class="keyword">public</span> List&lt;District&gt; <span class="title">Creat_District</span><span class="params">()</span></span>&#123;</span><br><span class="line">        List&lt;District&gt; district_list = <span class="keyword">new</span> ArrayList&lt;District&gt;();</span><br><span class="line">        District district_1 = <span class="keyword">new</span> District(<span class="number">116.35609462605613</span>,<span class="number">116.35809070137164</span> ,</span><br><span class="line">                <span class="number">40.006850750760485</span>,<span class="number">40.00527143350979</span>);</span><br><span class="line">        District district_2 = <span class="keyword">new</span> District(<span class="number">116.35805850227803</span>,<span class="number">116.3610959501106</span> ,</span><br><span class="line">                <span class="number">40.00690797043768</span>,<span class="number">40.00488486861002</span>);</span><br><span class="line">        District district_3 = <span class="keyword">new</span> District(<span class="number">116.3561155131877</span>,<span class="number">116.3580581918368</span> ,</span><br><span class="line">                <span class="number">40.00517270621107</span>,<span class="number">40.00429274172892</span>);</span><br><span class="line">        District district_4 = <span class="keyword">new</span> District(<span class="number">116.35813332305531</span>,<span class="number">116.36226554007133</span> ,</span><br><span class="line">                <span class="number">40.00481085303074</span>,<span class="number">40.00314959336152</span>);</span><br><span class="line">        District district_5 = <span class="keyword">new</span> District(<span class="number">116.35472021913039</span>,<span class="number">116.35821918730497</span> ,</span><br><span class="line">                <span class="number">40.004169381315634</span>,<span class="number">40.002565675659014</span>);</span><br><span class="line">        District district_6 = <span class="keyword">new</span> District(<span class="number">116.35477499180625</span>,<span class="number">116.35830615907452</span> ,</span><br><span class="line">                <span class="number">40.00245168494597</span>,<span class="number">40.00131673013192</span>);</span><br><span class="line">        District district_7 = <span class="keyword">new</span> District(<span class="number">116.3582954260433</span>,<span class="number">116.3613650729695</span> ,</span><br><span class="line">                <span class="number">40.00300270692919</span>,<span class="number">40.00159635843175</span>);</span><br><span class="line">        district_list.add(district_1);</span><br><span class="line">        district_list.add(district_2);</span><br><span class="line">        district_list.add(district_3);</span><br><span class="line">        district_list.add(district_4);</span><br><span class="line">        district_list.add(district_5);</span><br><span class="line">        district_list.add(district_6);</span><br><span class="line">        district_list.add(district_7);</span><br><span class="line">        <span class="keyword">return</span> district_list;</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="comment">//当前坐标是否在区域中</span></span><br><span class="line">    <span class="function"><span class="keyword">private</span> <span class="keyword">boolean</span> <span class="title">in_District</span><span class="params">(LatLng latlng, District district)</span></span>&#123;</span><br><span class="line">        <span class="keyword">if</span>(latlng.longitude&gt;=district.Left &amp;&amp; latlng.longitude&lt;=district.Right)&#123;</span><br><span class="line">            <span class="keyword">if</span>(latlng.latitude&gt;=district.Bottom &amp;&amp; latlng.latitude&lt;=district.Top)&#123;</span><br><span class="line">                <span class="keyword">return</span> <span class="keyword">true</span>;</span><br><span class="line">            &#125;</span><br><span class="line">            <span class="keyword">return</span> <span class="keyword">false</span>;</span><br><span class="line">        &#125;</span><br><span class="line">        <span class="keyword">else</span></span><br><span class="line">            <span class="keyword">return</span> <span class="keyword">false</span>;</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="comment">//返回当前坐标所属的区号</span></span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">int</span> <span class="title">getDistrict</span><span class="params">(LatLng latlng,List&lt;District&gt;district_list)</span></span>&#123;</span><br><span class="line">        <span class="keyword">int</span> district_id = <span class="number">0</span>;<span class="comment">//要返回的区号</span></span><br><span class="line">        <span class="keyword">for</span>(<span class="keyword">int</span> i=<span class="number">1</span>;i&lt;district_list.size();i++)&#123;</span><br><span class="line">            <span class="keyword">if</span>(in_District(latlng,district_list.get(i-<span class="number">1</span>)))&#123;</span><br><span class="line">                district_id =i;</span><br><span class="line">            &#125;</span><br><span class="line">        &#125;</span><br><span class="line">        <span class="keyword">return</span> district_id;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>区域查找类。</p>
+<p>Creat_District()：创建一个district的数组，包含了地图中所有区域的信息。（区域信息是提前写死的）</p>
+<p>in_District(LatLng latlng, District district)：判断一个坐标是否在区域中。</p>
+<p>getDistrict(LatLng latlng,List&lt;District&gt;district_list)：返回当前坐标所属的区号</p>
+</li>
+<li><p><strong>FeatureMatch类</strong></p>
+</li>
+</ul>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br><span class="line">66</span><br><span class="line">67</span><br><span class="line">68</span><br><span class="line">69</span><br><span class="line">70</span><br><span class="line">71</span><br><span class="line">72</span><br><span class="line">73</span><br><span class="line">74</span><br><span class="line">75</span><br><span class="line">76</span><br><span class="line">77</span><br><span class="line">78</span><br><span class="line">79</span><br><span class="line">80</span><br><span class="line">81</span><br><span class="line">82</span><br><span class="line">83</span><br><span class="line">84</span><br><span class="line">85</span><br><span class="line">86</span><br><span class="line">87</span><br><span class="line">88</span><br><span class="line">89</span><br><span class="line">90</span><br><span class="line">91</span><br><span class="line">92</span><br><span class="line">93</span><br><span class="line">94</span><br><span class="line">95</span><br><span class="line">96</span><br><span class="line">97</span><br><span class="line">98</span><br><span class="line">99</span><br><span class="line">100</span><br><span class="line">101</span><br><span class="line">102</span><br><span class="line">103</span><br><span class="line">104</span><br><span class="line">105</span><br><span class="line">106</span><br><span class="line">107</span><br><span class="line">108</span><br><span class="line">109</span><br><span class="line">110</span><br><span class="line">111</span><br><span class="line">112</span><br><span class="line">113</span><br><span class="line">114</span><br><span class="line">115</span><br><span class="line">116</span><br><span class="line">117</span><br><span class="line">118</span><br><span class="line">119</span><br><span class="line">120</span><br><span class="line">121</span><br><span class="line">122</span><br><span class="line">123</span><br><span class="line">124</span><br><span class="line">125</span><br><span class="line">126</span><br><span class="line">127</span><br><span class="line">128</span><br><span class="line">129</span><br><span class="line">130</span><br><span class="line">131</span><br><span class="line">132</span><br><span class="line">133</span><br><span class="line">134</span><br><span class="line">135</span><br><span class="line">136</span><br><span class="line">137</span><br><span class="line">138</span><br><span class="line">139</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">FeatureMatch</span> </span>&#123;</span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">double</span> <span class="title">Score</span><span class="params">(Bitmap src_bitmap1, Bitmap src_bitmap2)</span></span>&#123;</span><br><span class="line">        <span class="keyword">double</span> score = <span class="number">0</span>;</span><br><span class="line"></span><br><span class="line">        Mat test1 = <span class="keyword">new</span> Mat();</span><br><span class="line">        Mat test2 = <span class="keyword">new</span> Mat();</span><br><span class="line">        Mat test1_Gray = <span class="keyword">new</span> Mat();</span><br><span class="line">        Mat test2_Gray = <span class="keyword">new</span> Mat();</span><br><span class="line">        Mat test1_Blurred = <span class="keyword">new</span> Mat();</span><br><span class="line">        Mat test2_Blurred = <span class="keyword">new</span> Mat();</span><br><span class="line">        Mat out = <span class="keyword">new</span> Mat();</span><br><span class="line"></span><br><span class="line">        FeatureDetector SIFTdter = FeatureDetector.create(FeatureDetector.SURF);<span class="comment">//创建特征监测</span></span><br><span class="line">        DescriptorExtractor descriptorExtractor=DescriptorExtractor.create(DescriptorExtractor.SURF);<span class="comment">//描述子提取</span></span><br><span class="line">        DescriptorMatcher descriptorMatcher=DescriptorMatcher.create(DescriptorMatcher.FLANNBASED);<span class="comment">//描述子匹配</span></span><br><span class="line">        MatOfDMatch matches=<span class="keyword">new</span> MatOfDMatch();</span><br><span class="line"></span><br><span class="line">        Utils.bitmapToMat(src_bitmap1,test1);</span><br><span class="line">        Utils.bitmapToMat(src_bitmap2,test2);</span><br><span class="line">        Imgproc.cvtColor(test1,test1_Gray,COLOR_BGR2GRAY);</span><br><span class="line">        Imgproc.cvtColor(test2,test2_Gray,COLOR_BGR2GRAY);<span class="comment">//转化为灰度图</span></span><br><span class="line">        Size Ksize = <span class="keyword">new</span> Size(<span class="number">5</span>,<span class="number">5</span>);</span><br><span class="line">        GaussianBlur(test1_Gray,test1_Blurred,Ksize,<span class="number">0</span>);</span><br><span class="line">        GaussianBlur(test2_Gray,test2_Blurred,Ksize,<span class="number">0</span>);</span><br><span class="line">        Mat descriptors1=<span class="keyword">new</span> Mat();</span><br><span class="line">        Mat descriptors2=<span class="keyword">new</span> Mat();</span><br><span class="line">        MatOfKeyPoint kp1 = <span class="keyword">new</span> MatOfKeyPoint();<span class="comment">//特征点</span></span><br><span class="line">        MatOfKeyPoint kp2 = <span class="keyword">new</span> MatOfKeyPoint();<span class="comment">//特征点</span></span><br><span class="line">        SIFTdter.detect(test1_Blurred,kp1);</span><br><span class="line">        SIFTdter.detect(test2_Blurred,kp2);<span class="comment">//监测特征点</span></span><br><span class="line">        descriptorExtractor.compute(test1_Blurred,kp1,descriptors1);<span class="comment">//计算描述子</span></span><br><span class="line">        descriptorExtractor.compute(test2_Blurred,kp2,descriptors2);</span><br><span class="line">        descriptorMatcher.match(descriptors1,descriptors2,matches);<span class="comment">//进行匹配</span></span><br><span class="line"></span><br><span class="line">        <span class="comment">//-- Quick calculation of max and min distances between keypoints</span></span><br><span class="line">        List&lt;DMatch&gt; matches_list = matches.toList();<span class="comment">//将MatOfDMatch转为List,方便操作</span></span><br><span class="line">        Collections.sort(matches_list, <span class="keyword">new</span> Comparator&lt;DMatch&gt;() &#123;</span><br><span class="line">            <span class="meta">@Override</span></span><br><span class="line">            <span class="function"><span class="keyword">public</span> <span class="keyword">int</span> <span class="title">compare</span><span class="params">(DMatch o1, DMatch o2)</span> </span>&#123;</span><br><span class="line">                <span class="keyword">return</span> (<span class="keyword">int</span>) (o1.distance-o2.distance);</span><br><span class="line">            &#125;</span><br><span class="line">        &#125;);</span><br><span class="line"></span><br><span class="line">        <span class="keyword">double</span> max_dist = <span class="number">0</span>; <span class="keyword">double</span> min_dist = <span class="number">10000</span>;</span><br><span class="line">        <span class="keyword">for</span>( <span class="keyword">int</span> i = <span class="number">0</span>; i &lt; descriptors1.rows(); i++ )</span><br><span class="line">        &#123; <span class="keyword">double</span> dist = matches_list.get(i).distance;</span><br><span class="line">            <span class="keyword">if</span>( dist &lt; min_dist ) min_dist = dist;</span><br><span class="line">            <span class="keyword">if</span>( dist &gt; max_dist ) max_dist = dist;</span><br><span class="line">        &#125;</span><br><span class="line"></span><br><span class="line">        List&lt;DMatch&gt; good_matches_list = <span class="keyword">new</span> ArrayList&lt;DMatch&gt;();</span><br><span class="line">        <span class="keyword">for</span>( <span class="keyword">int</span> i = <span class="number">0</span>; i &lt; descriptors1.rows(); i++ )&#123;</span><br><span class="line">            <span class="keyword">if</span>( matches_list.get(i).distance &lt;= <span class="number">2</span>*min_dist)&#123;</span><br><span class="line">                good_matches_list.add( matches_list.get(i));</span><br><span class="line">            &#125;</span><br><span class="line">        &#125;</span><br><span class="line">        <span class="comment">/*--------------------------------------------------------------------------------*/</span></span><br><span class="line"></span><br><span class="line">        <span class="comment">//RANSAC优化</span></span><br><span class="line">        <span class="comment">//根据matches将特征点对齐,将坐标转换为float类型</span></span><br><span class="line">        List&lt;KeyPoint&gt; keypoint_1 = <span class="keyword">new</span> ArrayList&lt;KeyPoint&gt;();</span><br><span class="line">        List&lt;KeyPoint&gt; keypoint_2 = <span class="keyword">new</span> ArrayList&lt;KeyPoint&gt;();</span><br><span class="line">        keypoint_1 = kp1.toList();</span><br><span class="line">        keypoint_2 = kp2.toList();</span><br><span class="line">        List&lt;KeyPoint&gt; R_keypoint_1 = <span class="keyword">new</span> ArrayList&lt;KeyPoint&gt;();</span><br><span class="line">        List&lt;KeyPoint&gt; R_keypoint_2 = <span class="keyword">new</span> ArrayList&lt;KeyPoint&gt;();</span><br><span class="line">        <span class="keyword">for</span> (<span class="keyword">int</span> i=<span class="number">0</span>;i&lt;good_matches_list.size();i++) &#123;</span><br><span class="line">            R_keypoint_1.add(keypoint_1.get(good_matches_list.get(i).queryIdx));</span><br><span class="line">            R_keypoint_2.add(keypoint_2.get(good_matches_list.get(i).trainIdx));</span><br><span class="line">            <span class="comment">//这两句话的理解：R_keypoint1是要存储img01中能与img02匹配的特征点，</span></span><br><span class="line">            <span class="comment">//matches中存储了这些匹配点对的img01和img02的索引值</span></span><br><span class="line">        &#125;</span><br><span class="line">        List&lt;Point&gt; p1 = <span class="keyword">new</span> ArrayList&lt;Point&gt;();</span><br><span class="line">        List&lt;Point&gt; p2 = <span class="keyword">new</span> ArrayList&lt;Point&gt;();</span><br><span class="line">        <span class="keyword">for</span> (<span class="keyword">int</span> i=<span class="number">0</span>;i&lt;good_matches_list.size();i++)&#123;</span><br><span class="line">            p1.add(R_keypoint_1.get(i).pt);</span><br><span class="line">            p2.add(R_keypoint_2.get(i).pt);</span><br><span class="line">        &#125;</span><br><span class="line">        MatOfPoint2f mp1 = <span class="keyword">new</span> MatOfPoint2f();</span><br><span class="line">        mp1.fromList(p1);</span><br><span class="line">        MatOfPoint2f mp2 = <span class="keyword">new</span> MatOfPoint2f();</span><br><span class="line">        mp2.fromList(p2);</span><br><span class="line">        Mat Fundamental = <span class="keyword">new</span> Mat();</span><br><span class="line">        Mat m_RANSACStatus = <span class="keyword">new</span> Mat();<span class="comment">//用于存储RANSAC后每个点的状态</span></span><br><span class="line">        Fundamental = Calib3d.findFundamentalMat(mp1,mp2,RANSAC,<span class="number">3</span>,<span class="number">0.99</span>,m_RANSACStatus);</span><br><span class="line"></span><br><span class="line">        List&lt;KeyPoint&gt; RR_kp1_list = <span class="keyword">new</span> ArrayList&lt;KeyPoint&gt;();</span><br><span class="line">        List&lt;KeyPoint&gt; RR_kp2_list = <span class="keyword">new</span> ArrayList&lt;KeyPoint&gt;();</span><br><span class="line">        List&lt;DMatch&gt; RR_match_list = <span class="keyword">new</span> ArrayList&lt;DMatch&gt;();</span><br><span class="line">        <span class="keyword">int</span> index = <span class="number">0</span>;</span><br><span class="line">        <span class="keyword">for</span>(<span class="keyword">int</span> i=<span class="number">0</span>;i&lt;good_matches_list.size();i++)&#123;</span><br><span class="line">            <span class="keyword">double</span>[] d = m_RANSACStatus.get(i,<span class="number">0</span>);</span><br><span class="line">            <span class="keyword">if</span>(d[<span class="number">0</span>]!=<span class="number">0</span>)&#123;</span><br><span class="line">                RR_kp1_list.add(keypoint_1.get(i));</span><br><span class="line">                RR_kp2_list.add(keypoint_2.get(i));</span><br><span class="line">                good_matches_list.get(i).queryIdx=index;</span><br><span class="line">                good_matches_list.get(i).trainIdx=index;</span><br><span class="line">                RR_match_list.add(good_matches_list.get(i));</span><br><span class="line">                index++;</span><br><span class="line">            &#125;</span><br><span class="line">        &#125;</span><br><span class="line">        Collections.sort(RR_match_list, <span class="keyword">new</span> Comparator&lt;DMatch&gt;() &#123;</span><br><span class="line">            <span class="meta">@Override</span></span><br><span class="line">            <span class="function"><span class="keyword">public</span> <span class="keyword">int</span> <span class="title">compare</span><span class="params">(DMatch o1, DMatch o2)</span> </span>&#123;</span><br><span class="line">                <span class="keyword">return</span> (<span class="keyword">int</span>) (o1.distance-o2.distance);</span><br><span class="line">            &#125;</span><br><span class="line">        &#125;);</span><br><span class="line"></span><br><span class="line"></span><br><span class="line">        score = Ransac_aver(RR_match_list);</span><br><span class="line"></span><br><span class="line">        <span class="keyword">return</span> score;</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="function"><span class="keyword">private</span> <span class="keyword">double</span> <span class="title">Ransac_aver</span><span class="params">(List&lt;DMatch&gt; matches)</span></span>&#123;</span><br><span class="line">        <span class="keyword">double</span> sum = <span class="number">0</span>;</span><br><span class="line">        <span class="keyword">for</span>(<span class="keyword">int</span> i=<span class="number">0</span>;i&lt;matches.size();i++)&#123;</span><br><span class="line">            sum+= matches.get(i).distance;</span><br><span class="line">        &#125;</span><br><span class="line">        <span class="keyword">return</span> sum/matches.size();</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="function">Mat <span class="title">drawMatchs</span><span class="params">(Mat img1,MatOfKeyPoint key1,Mat img2,MatOfKeyPoint key2,MatOfDMatch matches,<span class="keyword">boolean</span> imageOnly)</span></span>&#123;</span><br><span class="line">        Mat out =<span class="keyword">new</span> Mat();</span><br><span class="line">        Mat im1 =<span class="keyword">new</span> Mat();</span><br><span class="line">        Mat im2 =<span class="keyword">new</span> Mat();</span><br><span class="line">        Imgproc.cvtColor(img1,im1,Imgproc.COLOR_BGR2RGB);</span><br><span class="line">        Imgproc.cvtColor(img2,im2,Imgproc.COLOR_BGR2RGB);</span><br><span class="line">        <span class="keyword">if</span>(imageOnly)&#123;</span><br><span class="line">            MatOfDMatch emptyMatch=<span class="keyword">new</span> MatOfDMatch();</span><br><span class="line">            MatOfKeyPoint emptyKey1=<span class="keyword">new</span> MatOfKeyPoint();</span><br><span class="line">            MatOfKeyPoint emptyKey2=<span class="keyword">new</span> MatOfKeyPoint();</span><br><span class="line">            Features2d.drawMatches(im1,emptyKey1,im2,emptyKey2,emptyMatch,out);</span><br><span class="line">        &#125;<span class="keyword">else</span> &#123;</span><br><span class="line">            Features2d.drawMatches(im1,key1,im2,key2,matches,out);</span><br><span class="line">        &#125;</span><br><span class="line">        Imgproc.cvtColor(out,out, Imgproc.COLOR_BGR2RGB);</span><br><span class="line">        <span class="keyword">return</span> out;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>​   图像特征匹配类</p>
+<p>​   Score(Bitmap src_bitmap1, Bitmap src_bitmap2)：返回传入两张图片的匹配得分（distance)</p>
+<p>​   Ransac_aver(List&lt;DMatch&gt; matches)：计算RANSAC提纯后的distance平均值</p>
+<p>​   Mat drawMatchs(Mat img1,MatOfKeyPoint key1,Mat img2,MatOfKeyPoint key2,MatOfDMatch matches,boolean imageOnly)：绘制两张图片对比图，返回类型为矩阵。imageOnly参数：是否画出匹配线条。</p>
+<hr>
+<p>最后还有一点小坑</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br></pre></td><td class="code"><pre><span class="line">OpenCVLoader.initDebug();</span><br><span class="line">mLoaderCallback.onManagerConnected(LoaderCallbackInterface.SUCCESS);</span><br><span class="line"><span class="keyword">private</span> BaseLoaderCallback mLoaderCallback = <span class="keyword">new</span> BaseLoaderCallback(<span class="keyword">this</span>) &#123;</span><br><span class="line">        <span class="meta">@Override</span></span><br><span class="line">        <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">onManagerConnected</span><span class="params">(<span class="keyword">int</span> status)</span> </span>&#123;</span><br><span class="line">            <span class="keyword">switch</span> (status) &#123;</span><br><span class="line">                <span class="keyword">case</span> LoaderCallbackInterface.SUCCESS: &#123;</span><br><span class="line">                    Log.i(TAG, <span class="string">&quot;OpenCV loaded successfully&quot;</span>);</span><br><span class="line">                    System.loadLibrary(<span class="string">&quot;nonfree&quot;</span>);</span><br><span class="line">                &#125;</span><br><span class="line">                <span class="keyword">break</span>;</span><br><span class="line">                <span class="keyword">default</span>: &#123;</span><br><span class="line">                    <span class="keyword">super</span>.onManagerConnected(status);</span><br><span class="line">                &#125;</span><br><span class="line">                <span class="keyword">break</span>;</span><br><span class="line">            &#125;</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;;</span><br></pre></td></tr></table></figure>
+<p>​   新创建的activity一定要记得加载Opencv，不然一些API函数会报错无法使用。</p>
+
+    </article>
+    <!-- license  -->
+    
+    <!-- paginator  -->
+    <ul class="post-paginator">
+        <li class="next">
+            
+        </li>
+        <li class="previous">
+            
+                <div class="prevSlogan">Previous Post</div>
+                <a href= "/2021/01/27/2021-1-27/" title= "图像特征匹配开发手记Vol_4">
+                    <div class="prevTitle">图像特征匹配开发手记Vol_4</div>
+                </a>
+            
+        </li>
+    </ul>
+    <!-- 评论插件 -->
+    <!-- 来必力City版安装代码 -->
+
+<!-- City版安装代码已完成 -->
+    
+    
+    <!-- gitalk评论 -->
+
+    <!-- utteranc评论 -->
+
+    <!-- partial('_partial/comment/changyan') -->
+    <!--PC版-->
+
+
+    
+    
+
+    <!-- 评论 -->
+</main>
+            <!-- profile -->
+            
+        </div>
+        <footer class="footer footer-unloaded">
+    <!-- social  -->
+    
+    <div class="social">
+        
+    
+        
+            
+                <a href="mailto:1053507223D@qq.com" class="iconfont-archer email" title=email ></a>
+            
+        
+    
+        
+            
+                <a href="http://boooil.github.io" class="iconfont-archer github" target="_blank" title=github></a>
+            
+        
+    
+        
+            
+                <span class="iconfont-archer wechat" title=wechat>
+                  
+                  <img class="profile-qr" src="/assets/wechat_qr.png" />
+                </span>
+            
+        
+    
+        
+    
+        
+    
+        
+    
+        
+    
+        
+    
+        
+    
+        
+    
+        
+    
+        
+    
+        
+    
+        
+    
+        
+    
+        
+            
+                <a href="/assets/bilibili_qr.png" class="iconfont-archer bilibili" target="_blank" title=bilibili></a>
+            
+        
+    
+        
+    
+        
+    
+        
+    
+        
+    
+        
+    
+        
+    
+        
+    
+
+    </div>
+    
+    <!-- powered by Hexo  -->
+    <div class="copyright">
+        <span id="hexo-power">Powered by <a href="https://hexo.io/" target="_blank">Hexo</a></span><span class="iconfont-archer power">&#xe635;</span><span id="theme-info">theme <a href="https://github.com/fi3ework/hexo-theme-archer" target="_blank">Archer</a></span>
+    </div>
+    <!-- 不蒜子  -->
+    
+</footer>
+    </div>
+    <!-- toc -->
+    
+    <div class="back-top iconfont-archer">&#xe639;</div>
+    <div class="sidebar sidebar-hide">
+    <ul class="sidebar-tabs sidebar-tabs-active-0">
+        <li class="sidebar-tab-archives"><span class="iconfont-archer">&#xe67d;</span><span class="tab-name">Archive</span></li>
+        <li class="sidebar-tab-tags"><span class="iconfont-archer">&#xe61b;</span><span class="tab-name">Tag</span></li>
+        <li class="sidebar-tab-categories"><span class="iconfont-archer">&#xe666;</span><span class="tab-name">Cate</span></li>
+    </ul>
+    <div class="sidebar-content sidebar-content-show-archive">
+          <div class="sidebar-panel-archives">
+    <!-- 在ejs中将archive按照时间排序 -->
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    <div class="total-and-search">
+        <div class="total-archive">
+        Total : 7
+        </div>
+        <!-- search  -->
+        
+    </div>
+    
+    <div class="post-archive">
+    
+    
+    
+    
+    <div class="archive-year"> 2021 </div>
+    <ul class="year-list">
+    
+    
+        <li class="archive-post-item">
+            <span class="archive-post-date">01/28</span><a class="archive-post-title" href= "/2021/01/28/2021-1-28/" >图像特征匹配开发手记Vol_5</a>
+        </li>
+    
+    
+        <li class="archive-post-item">
+            <span class="archive-post-date">01/27</span><a class="archive-post-title" href= "/2021/01/27/2021-1-27/" >图像特征匹配开发手记Vol_4</a>
+        </li>
+    
+    
+        <li class="archive-post-item">
+            <span class="archive-post-date">01/26</span><a class="archive-post-title" href= "/2021/01/26/2021-1-26/" >图像特征匹配开发手记Vol_3</a>
+        </li>
+    
+    
+        <li class="archive-post-item">
+            <span class="archive-post-date">01/24</span><a class="archive-post-title" href= "/2021/01/24/2021-1-24/" >图像特征匹配开发手记Vol_2</a>
+        </li>
+    
+    
+        <li class="archive-post-item">
+            <span class="archive-post-date">01/23</span><a class="archive-post-title" href= "/2021/01/23/2021-1-23/" >Boil的小玩意儿分享Vol_1</a>
+        </li>
+    
+    
+        <li class="archive-post-item">
+            <span class="archive-post-date">01/22</span><a class="archive-post-title" href= "/2021/01/22/2021-1-22/" >图像特征匹配开发手记Vol_1</a>
+        </li>
+    
+    
+        <li class="archive-post-item">
+            <span class="archive-post-date">01/21</span><a class="archive-post-title" href= "/2021/01/21/2021-1-21/" >Hello World</a>
+        </li>
+    
+    </div>
+  </div>
+        <div class="sidebar-panel-tags">
+    <div class="sidebar-tags-name">
+    
+        <span class="sidebar-tag-name" data-tags="杂谈"><span class="iconfont-archer">&#xe606;</span>杂谈</span>
+    
+        <span class="sidebar-tag-name" data-tags="开发"><span class="iconfont-archer">&#xe606;</span>开发</span>
+    
+    </div>
+    <div class="iconfont-archer sidebar-tags-empty">&#xe678;</div>
+    <div class="tag-load-fail" style="display: none; color: #ccc; font-size: 0.6rem;">
+    缺失模块。<br/>
+    1、请确保node版本大于6.2<br/>
+    2、在博客根目录（注意不是archer根目录）执行以下命令：<br/>
+    <span style="color: #f75357; font-size: 1rem; line-height: 2rem;">npm i hexo-generator-json-content --save</span><br/>
+    3、在根目录_config.yml里添加配置：
+    <pre style="color: #787878; font-size: 0.6rem;">
+jsonContent:
+  meta: false
+  pages: false
+  posts:
+    title: true
+    date: true
+    path: true
+    text: false
+    raw: false
+    content: false
+    slug: false
+    updated: false
+    comments: false
+    link: false
+    permalink: false
+    excerpt: false
+    categories: true
+    tags: true</pre>
+    </div> 
+    <div class="sidebar-tags-list"></div>
+</div>
+        <div class="sidebar-panel-categories">
+    <div class="sidebar-categories-name">
+    
+    </div>
+    <div class="iconfont-archer sidebar-categories-empty">&#xe678;</div>
+    <div class="sidebar-categories-list"></div>
+</div>
+    </div>
+</div> 
+    <script>
+    var siteMeta = {
+        root: "/",
+        author: "Boooil"
+    }
+</script>
+    <!-- CDN failover -->
+    <script src="https://cdn.jsdelivr.net/npm/jquery@3.3.1/dist/jquery.min.js"></script>
+    <script type="text/javascript">
+        if (typeof window.$ === 'undefined')
+        {
+            console.warn('jquery load from jsdelivr failed, will load local script')
+            document.write('<script src="/lib/jquery.min.js">\x3C/script>')
+        }
+    </script>
+    <script src="/scripts/main.js"></script>
+    <!-- algolia -->
+    
+    <!-- busuanzi  -->
+    
+    <!-- CNZZ  -->
+    
+    </div>
+    <!-- async load share.js -->
+    
+        <script src="/scripts/share.js" async></script>    
+     
+    </body>
+</html>
+
+
