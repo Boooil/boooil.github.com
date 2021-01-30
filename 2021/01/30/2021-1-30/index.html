@@ -1,0 +1,770 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+    <!-- title -->
+
+
+
+
+<!-- keywords -->
+
+
+
+
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no" >
+    <meta name="author" content="Boooil">
+    <meta name="renderer" content="webkit">
+    <meta name="copyright" content="Boooil">
+    
+    <meta name="keywords" content="hexo,hexo-theme,hexo-blog">
+    
+    <meta name="description" content="">
+    <meta name="description" content="数据预处理">
+<meta property="og:type" content="article">
+<meta property="og:title" content="植物病虫害识别系统开发手记Vol_1">
+<meta property="og:url" content="http://boooil.github.io/2021/01/30/2021-1-30/index.html">
+<meta property="og:site_name" content="我的博客">
+<meta property="og:description" content="数据预处理">
+<meta property="og:locale" content="zh_CN">
+<meta property="og:image" content="https://img.imgdb.cn/item/6015752b3ffa7d37b3f77bb4.jpg">
+<meta property="og:image" content="https://img.imgdb.cn/item/6015752b3ffa7d37b3f77bb6.jpg">
+<meta property="og:image" content="https://img.imgdb.cn/item/6015752b3ffa7d37b3f77bb9.jpg">
+<meta property="article:published_time" content="2021-01-30T14:48:48.000Z">
+<meta property="article:modified_time" content="2021-01-30T15:03:47.141Z">
+<meta property="article:author" content="Boooil">
+<meta property="article:tag" content="开发">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="https://img.imgdb.cn/item/6015752b3ffa7d37b3f77bb4.jpg">
+    <meta http-equiv="Cache-control" content="no-cache">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1"/>
+    
+    <title>植物病虫害识别系统开发手记Vol_1 · Boooil&#39;s BLOG</title>
+    <style type="text/css">
+    @font-face {
+        font-family: 'Oswald-Regular';
+        src: url("/font/Oswald-Regular.ttf");
+    }
+
+    body {
+        margin: 0;
+    }
+
+    header,
+    footer,
+    .back-top,
+    .sidebar,
+    .container,
+    .site-intro-meta,
+    .toc-wrapper {
+        display: none;
+    }
+
+    .site-intro {
+        position: relative;
+        z-index: 3;
+        width: 100%;
+        /* height: 50vh; */
+        overflow: hidden;
+    }
+
+    .site-intro-placeholder {
+        position: absolute;
+        z-index: -2;
+        top: 0;
+        left: 0;
+        width: calc(100% + 300px);
+        height: 100%;
+        background: repeating-linear-gradient(-45deg, #444 0, #444 80px, #333 80px, #333 160px);
+        background-position: center center;
+        transform: translate3d(-226px, 0, 0);
+        animation: gradient-move 2.5s ease-out 0s infinite;
+    }
+
+    @keyframes gradient-move {
+        0% {
+            transform: translate3d(-226px, 0, 0);
+        }
+        100% {
+            transform: translate3d(0, 0, 0);
+        }
+    }
+
+</style>
+
+    <link rel="preload" href= "/css/style.css?v=20180824" as="style" onload="this.onload=null;this.rel='stylesheet'" />
+    <link rel="stylesheet" href= "/css/mobile.css?v=20180824" media="(max-width: 980px)">
+    
+    <link rel="preload" href="https://cdnjs.cloudflare.com/ajax/libs/fancybox/3.2.5/jquery.fancybox.min.css" as="style" onload="this.onload=null;this.rel='stylesheet'" />
+    
+    <!-- /*! loadCSS. [c]2017 Filament Group, Inc. MIT License */
+/* This file is meant as a standalone workflow for
+- testing support for link[rel=preload]
+- enabling async CSS loading in browsers that do not support rel=preload
+- applying rel preload css once loaded, whether supported or not.
+*/ -->
+<script>
+(function( w ){
+	"use strict";
+	// rel=preload support test
+	if( !w.loadCSS ){
+		w.loadCSS = function(){};
+	}
+	// define on the loadCSS obj
+	var rp = loadCSS.relpreload = {};
+	// rel=preload feature support test
+	// runs once and returns a function for compat purposes
+	rp.support = (function(){
+		var ret;
+		try {
+			ret = w.document.createElement( "link" ).relList.supports( "preload" );
+		} catch (e) {
+			ret = false;
+		}
+		return function(){
+			return ret;
+		};
+	})();
+
+	// if preload isn't supported, get an asynchronous load by using a non-matching media attribute
+	// then change that media back to its intended value on load
+	rp.bindMediaToggle = function( link ){
+		// remember existing media attr for ultimate state, or default to 'all'
+		var finalMedia = link.media || "all";
+
+		function enableStylesheet(){
+			link.media = finalMedia;
+		}
+
+		// bind load handlers to enable media
+		if( link.addEventListener ){
+			link.addEventListener( "load", enableStylesheet );
+		} else if( link.attachEvent ){
+			link.attachEvent( "onload", enableStylesheet );
+		}
+
+		// Set rel and non-applicable media type to start an async request
+		// note: timeout allows this to happen async to let rendering continue in IE
+		setTimeout(function(){
+			link.rel = "stylesheet";
+			link.media = "only x";
+		});
+		// also enable media after 3 seconds,
+		// which will catch very old browsers (android 2.x, old firefox) that don't support onload on link
+		setTimeout( enableStylesheet, 3000 );
+	};
+
+	// loop through link elements in DOM
+	rp.poly = function(){
+		// double check this to prevent external calls from running
+		if( rp.support() ){
+			return;
+		}
+		var links = w.document.getElementsByTagName( "link" );
+		for( var i = 0; i < links.length; i++ ){
+			var link = links[ i ];
+			// qualify links to those with rel=preload and as=style attrs
+			if( link.rel === "preload" && link.getAttribute( "as" ) === "style" && !link.getAttribute( "data-loadcss" ) ){
+				// prevent rerunning on link
+				link.setAttribute( "data-loadcss", true );
+				// bind listeners to toggle media back
+				rp.bindMediaToggle( link );
+			}
+		}
+	};
+
+	// if unsupported, run the polyfill
+	if( !rp.support() ){
+		// run once at least
+		rp.poly();
+
+		// rerun poly on an interval until onload
+		var run = w.setInterval( rp.poly, 500 );
+		if( w.addEventListener ){
+			w.addEventListener( "load", function(){
+				rp.poly();
+				w.clearInterval( run );
+			} );
+		} else if( w.attachEvent ){
+			w.attachEvent( "onload", function(){
+				rp.poly();
+				w.clearInterval( run );
+			} );
+		}
+	}
+
+
+	// commonjs
+	if( typeof exports !== "undefined" ){
+		exports.loadCSS = loadCSS;
+	}
+	else {
+		w.loadCSS = loadCSS;
+	}
+}( typeof global !== "undefined" ? global : this ) );
+</script>
+
+    <link rel="icon" href= "/assets/icon.ico" />
+    <link rel="preload" href="https://cdn.jsdelivr.net/npm/webfontloader@1.6.28/webfontloader.min.js" as="script" />
+    <link rel="preload" href="https://cdn.jsdelivr.net/npm/jquery@3.3.1/dist/jquery.min.js" as="script" />
+    <link rel="preload" href="/scripts/main.js" as="script" />
+    <link rel="preload" as="font" href="/font/Oswald-Regular.ttf" crossorigin>
+    <link rel="preload" as="font" href="https://at.alicdn.com/t/font_327081_1dta1rlogw17zaor.woff" crossorigin>
+    
+    <!-- fancybox -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/fancybox/3.2.5/jquery.fancybox.min.js" defer></script>
+    <!-- 百度统计  -->
+    
+    <!-- 谷歌统计  -->
+    
+<meta name="generator" content="Hexo 5.3.0"></head>
+
+    
+        <body class="post-body">
+    
+    
+<header class="header">
+
+    <div class="read-progress"></div>
+    <div class="header-sidebar-menu">&#xe775;</div>
+    <!-- post页的toggle banner  -->
+    
+    <div class="banner">
+            <div class="blog-title">
+                <a href="/" >Boooil&#39;s BLOG.</a>
+            </div>
+            <div class="post-title">
+                <a href="#" class="post-name">植物病虫害识别系统开发手记Vol_1</a>
+            </div>
+    </div>
+    
+    <a class="home-link" href=/>Boooil's BLOG.</a>
+</header>
+    <div class="wrapper">
+        <div class="site-intro" style="
+
+
+
+
+
+
+
+height:50vh;
+">
+    
+    <!-- 主页  -->
+    
+    
+    <!-- 404页  -->
+            
+    <div class="site-intro-placeholder"></div>
+    <div class="site-intro-img" style="background-image: url(/intro/post-bg2.jpg)"></div>
+    <div class="site-intro-meta">
+        <!-- 标题  -->
+        <h1 class="intro-title">
+            <!-- 主页  -->
+            
+            植物病虫害识别系统开发手记Vol_1
+            <!-- 404 -->
+            
+        </h1>
+        <!-- 副标题 -->
+        <p class="intro-subtitle">
+            <!-- 主页副标题  -->
+            
+            
+            <!-- 404 -->
+            
+        </p>
+        <!-- 文章页meta -->
+        
+            <div class="post-intros">
+                <!-- 文章页标签  -->
+                
+                    <div class= post-intro-tags >
+    
+        <a class="post-tag" href="javascript:void(0);" data-tags = "开发">开发</a>
+    
+</div>
+                
+                
+                <div class="post-intro-meta">
+                    <span class="post-intro-calander iconfont-archer">&#xe676;</span>
+                    <span class="post-intro-time">2021/01/30</span>
+                    
+                    <span class="shareWrapper">
+                        <span class="iconfont-archer shareIcon">&#xe71d;</span>
+                        <span class="shareText">Share</span>
+                        <ul class="shareList">
+                            <li class="iconfont-archer share-qr" data-type="qr">&#xe75b;
+                                <div class="share-qrcode"></div>
+                            </li>
+                            <li class="iconfont-archer" data-type="weibo">&#xe619;</li>
+                            <li class="iconfont-archer" data-type="qzone">&#xe62e;</li>
+                            <li class="iconfont-archer" data-type="twitter">&#xe634;</li>
+                            <li class="iconfont-archer" data-type="facebook">&#xe67a;</li>
+                        </ul>
+                    </span>
+                </div>
+            </div>
+        
+    </div>
+</div>
+        <script>
+ 
+  // get user agent
+  var browser = {
+    versions: function () {
+      var u = window.navigator.userAgent;
+      return {
+        userAgent: u,
+        trident: u.indexOf('Trident') > -1, //IE内核
+        presto: u.indexOf('Presto') > -1, //opera内核
+        webKit: u.indexOf('AppleWebKit') > -1, //苹果、谷歌内核
+        gecko: u.indexOf('Gecko') > -1 && u.indexOf('KHTML') == -1, //火狐内核
+        mobile: !!u.match(/AppleWebKit.*Mobile.*/), //是否为移动终端
+        ios: !!u.match(/\(i[^;]+;( U;)? CPU.+Mac OS X/), //ios终端
+        android: u.indexOf('Android') > -1 || u.indexOf('Linux') > -1, //android终端或者uc浏览器
+        iPhone: u.indexOf('iPhone') > -1 || u.indexOf('Mac') > -1, //是否为iPhone或者安卓QQ浏览器
+        iPad: u.indexOf('iPad') > -1, //是否为iPad
+        webApp: u.indexOf('Safari') == -1, //是否为web应用程序，没有头部与底部
+        weixin: u.indexOf('MicroMessenger') == -1, //是否为微信浏览器
+        uc: u.indexOf('UCBrowser') > -1 //是否为android下的UC浏览器
+      };
+    }()
+  }
+  console.log("userAgent:" + browser.versions.userAgent);
+
+  // callback
+  function fontLoaded() {
+    console.log('font loaded');
+    if (document.getElementsByClassName('site-intro-meta')) {
+      document.getElementsByClassName('intro-title')[0].classList.add('intro-fade-in');
+      document.getElementsByClassName('intro-subtitle')[0].classList.add('intro-fade-in');
+      var postIntros = document.getElementsByClassName('post-intros')[0]
+      if (postIntros) {
+        postIntros.classList.add('post-fade-in');
+      }
+    }
+  }
+
+  // UC不支持跨域，所以直接显示
+  function asyncCb(){
+    if (browser.versions.uc) {
+      console.log("UCBrowser");
+      fontLoaded();
+    } else {
+      WebFont.load({
+        custom: {
+          families: ['Oswald-Regular']
+        },
+        loading: function () {  //所有字体开始加载
+          // console.log('loading');
+        },
+        active: function () {  //所有字体已渲染
+          fontLoaded();
+        },
+        inactive: function () { //字体预加载失败，无效字体或浏览器不支持加载
+          console.log('inactive: timeout');
+          fontLoaded();
+        },
+        timeout: 5000 // Set the timeout to two seconds
+      });
+    }
+  }
+
+  function asyncErr(){
+    console.warn('script load from CDN failed, will load local script')
+  }
+
+  // load webfont-loader async, and add callback function
+  function async(u, cb, err) {
+    var d = document, t = 'script',
+      o = d.createElement(t),
+      s = d.getElementsByTagName(t)[0];
+    o.src = u;
+    if (cb) { o.addEventListener('load', function (e) { cb(null, e); }, false); }
+    if (err) { o.addEventListener('error', function (e) { err(null, e); }, false); }
+    s.parentNode.insertBefore(o, s);
+  }
+
+  var asyncLoadWithFallBack = function(arr, success, reject) {
+      var currReject = function(){
+        reject()
+        arr.shift()
+        if(arr.length)
+          async(arr[0], success, currReject)
+        }
+
+      async(arr[0], success, currReject)
+  }
+
+  asyncLoadWithFallBack([
+    "https://cdn.jsdelivr.net/npm/webfontloader@1.6.28/webfontloader.min.js", 
+    "https://cdn.bootcss.com/webfont/1.6.28/webfontloader.js",
+    "/lib/webfontloader.min.js"
+  ], asyncCb, asyncErr)
+</script>        
+        <img class="loading" src="/assets/loading.svg" style="display: block; margin: 6rem auto 0 auto; width: 6rem; height: 6rem;" />
+        <div class="container container-unloaded">
+            <main class="main post-page">
+    <article class="article-entry">
+        <h3 id="数据预处理"><a href="#数据预处理" class="headerlink" title="数据预处理"></a>数据预处理<a id="more"></a></h3><hr>
+<ul>
+<li><p>数据集</p>
+<p>​    本数据集来自AI Challenger2018农作物检测比赛所用数据集，官方前后总共发布了两次比赛数据集．第一次数据集有很多图像存在标签交叉的情况(即相同的图像存在不同的标签，特别是病害程度一般和严重存在交叉情况)，训练图像总数为32768张，验证图像总数为4992张，测试集A图像总数为4959张；因为比赛社区很多人反馈数据交叉的现象，官方在比赛的又发布了第二次比赛数据，第二次发布的数据是对存在标签交叉部分的进行更新，训练图像总数为31718张，验证图像总数为4540张。</p>
+<p>​     用于训练的数据集为第二个版本。</p>
+</li>
+</ul>
+<div align=center><img src="https://img.imgdb.cn/item/6015752b3ffa7d37b3f77bb4.jpg"/></div>
+
+<ul>
+<li><p>数据可视化</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">import</span> os</span><br><span class="line"><span class="keyword">import</span> pandas <span class="keyword">as</span> pd</span><br><span class="line"><span class="keyword">import</span> matplotlib.pyplot <span class="keyword">as</span> plt</span><br><span class="line">train_path = <span class="string">&#x27;data/data17627/AgriculturalDisease_trainingset/images&#x27;</span></span><br><span class="line">valid_path = <span class="string">&quot;data/data17627/AgriculturalDisease_validationset/images&quot;</span></span><br><span class="line">train_list = os.listdir(train_path)</span><br><span class="line">valid_list = os.listdir(valid_path)</span><br><span class="line">print(<span class="string">&#x27;AgriculturalDisease_trainingset:&#x27;</span>,<span class="built_in">len</span>(train_list))</span><br><span class="line">print(<span class="string">&#x27;AgriculturalDisease_validationset:&#x27;</span>,<span class="built_in">len</span>(valid_list))</span><br><span class="line"></span><br><span class="line">train_json_path = <span class="string">&#x27;data/data17627/AgriculturalDisease_trainingset/AgriculturalDisease_train_annotations.json&#x27;</span></span><br><span class="line">valid_json_path = <span class="string">&#x27;data/data17627/AgriculturalDisease_validationset/AgriculturalDisease_validation_annotations.json&#x27;</span></span><br><span class="line"><span class="comment"># train_json_path = &#x27;work/data/train_no_44_45_9_24.json&#x27;</span></span><br><span class="line"><span class="comment"># valid_json_path = &#x27;work/data/valid_no_44_45_9_24.json&#x27;</span></span><br><span class="line"><span class="keyword">with</span> <span class="built_in">open</span>(train_json_path,encoding=<span class="string">&#x27;utf-8&#x27;</span>) <span class="keyword">as</span> datafile1:</span><br><span class="line">    train_label_df = pd.read_json(datafile1,orient=<span class="string">&#x27;records&#x27;</span>)</span><br><span class="line"><span class="keyword">with</span> <span class="built_in">open</span>(valid_json_path,encoding=<span class="string">&#x27;utf-8&#x27;</span>) <span class="keyword">as</span> datafile2:</span><br><span class="line">    valid_label_df = pd.read_json(datafile2,orient=<span class="string">&#x27;records&#x27;</span>)</span><br><span class="line"><span class="comment"># 查看有没有缺失值</span></span><br><span class="line">print(train_label_df.isnull().<span class="built_in">sum</span>())</span><br><span class="line">print(valid_label_df.isnull().<span class="built_in">sum</span>())</span><br><span class="line"></span><br><span class="line">plt.figure(figsize=(<span class="number">12</span>, <span class="number">8</span>))</span><br><span class="line">plt.subplot(<span class="number">2</span>, <span class="number">1</span>, <span class="number">1</span>)</span><br><span class="line">train_label_df[<span class="string">&#x27;disease_class&#x27;</span>].value_counts().plot(kind=<span class="string">&#x27;bar&#x27;</span>,grid=<span class="literal">True</span>,rot = <span class="number">45</span>,alpha = <span class="number">0.8</span>,title = <span class="string">&#x27;trainset_label_distribute&#x27;</span>,legend = <span class="literal">True</span> )</span><br><span class="line">plt.subplot(<span class="number">2</span>, <span class="number">1</span>, <span class="number">2</span>)</span><br><span class="line">valid_label_df[<span class="string">&#x27;disease_class&#x27;</span>].value_counts().plot(kind=<span class="string">&#x27;bar&#x27;</span>,grid=<span class="literal">True</span>,rot = <span class="number">45</span>,alpha = <span class="number">0.8</span>,title = <span class="string">&#x27;validationset_label_distribute&#x27;</span>)</span><br><span class="line"><span class="comment"># 查看各类样本总数</span></span><br><span class="line">train_label_df[<span class="string">&#x27;disease_class&#x27;</span>].value_counts().sort_index()</span><br></pre></td></tr></table></figure>
+<p>​ 进行可视化后，得到结果</p>
+</li>
+</ul>
+<div align=center><img src="https://img.imgdb.cn/item/6015752b3ffa7d37b3f77bb6.jpg"/></div>
+
+<div align=center><img src="https://img.imgdb.cn/item/6015752b3ffa7d37b3f77bb9.jpg"/></div>
+
+<p>​   其中横坐标为作物的病种类，纵坐标为数量。</p>
+<ul>
+<li><p>数据剔除</p>
+<p>​ 通过可视化我们发现，44和45类型的图片数量很少，接近于没有，为了让结果准确率更高，我们可以将这两类剔除。</p>
+<p>​ 原理很简单，44之前的disease_label不用动，45之后的disease_label减2即可。</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">with</span> codecs.<span class="built_in">open</span>(train_file) <span class="keyword">as</span> flist:</span><br><span class="line">    lines = json.load(flist)</span><br><span class="line">    new_list = [i  <span class="keyword">for</span> i <span class="keyword">in</span> lines <span class="keyword">if</span> i[<span class="string">&#x27;disease_class&#x27;</span>] <span class="keyword">not</span> <span class="keyword">in</span> [<span class="number">44</span>,<span class="number">45</span>]]</span><br><span class="line">    <span class="keyword">for</span> i <span class="keyword">in</span> <span class="built_in">range</span>(<span class="built_in">len</span>(new_list)):</span><br><span class="line">        <span class="keyword">if</span>(new_list[i][<span class="string">&#x27;disease_class&#x27;</span>] &gt;<span class="number">43</span> ):</span><br><span class="line">            new_list[i][<span class="string">&#x27;disease_class&#x27;</span>] -= <span class="number">2</span></span><br></pre></td></tr></table></figure></li>
+<li><p>对图片的操作</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br><span class="line">66</span><br><span class="line">67</span><br><span class="line">68</span><br><span class="line">69</span><br><span class="line">70</span><br><span class="line">71</span><br><span class="line">72</span><br><span class="line">73</span><br><span class="line">74</span><br><span class="line">75</span><br><span class="line">76</span><br><span class="line">77</span><br><span class="line">78</span><br><span class="line">79</span><br><span class="line">80</span><br><span class="line">81</span><br><span class="line">82</span><br><span class="line">83</span><br><span class="line">84</span><br><span class="line">85</span><br><span class="line">86</span><br><span class="line">87</span><br><span class="line">88</span><br><span class="line">89</span><br><span class="line">90</span><br><span class="line">91</span><br><span class="line">92</span><br><span class="line">93</span><br><span class="line">94</span><br><span class="line">95</span><br><span class="line">96</span><br><span class="line">97</span><br><span class="line">98</span><br><span class="line">99</span><br><span class="line">100</span><br><span class="line">101</span><br><span class="line">102</span><br><span class="line">103</span><br><span class="line">104</span><br><span class="line">105</span><br><span class="line">106</span><br><span class="line">107</span><br><span class="line">108</span><br><span class="line">109</span><br><span class="line">110</span><br><span class="line">111</span><br><span class="line">112</span><br><span class="line">113</span><br><span class="line">114</span><br><span class="line">115</span><br><span class="line">116</span><br><span class="line">117</span><br><span class="line">118</span><br><span class="line">119</span><br><span class="line">120</span><br><span class="line">121</span><br><span class="line">122</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">def</span> <span class="title">resize_img</span>(<span class="params">img, target_size</span>):</span></span><br><span class="line">    <span class="string">&quot;&quot;&quot;</span></span><br><span class="line"><span class="string">    强制缩放图片</span></span><br><span class="line"><span class="string">    :param img:</span></span><br><span class="line"><span class="string">    :param target_size:</span></span><br><span class="line"><span class="string">    :return:</span></span><br><span class="line"><span class="string">    &quot;&quot;&quot;</span></span><br><span class="line">    target_size = input_size</span><br><span class="line">    img = img.resize((target_size[<span class="number">1</span>], target_size[<span class="number">2</span>]), Image.BILINEAR)</span><br><span class="line">    <span class="keyword">return</span> img</span><br><span class="line"></span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">def</span> <span class="title">random_crop</span>(<span class="params">img, scale=[<span class="number">0.08</span>, <span class="number">1.0</span>], ratio=[<span class="number">3.</span> / <span class="number">4.</span>, <span class="number">4.</span> / <span class="number">3.</span>]</span>):</span></span><br><span class="line">    aspect_ratio = math.sqrt(np.random.uniform(*ratio))</span><br><span class="line">    w = <span class="number">1.</span> * aspect_ratio</span><br><span class="line">    h = <span class="number">1.</span> / aspect_ratio</span><br><span class="line"></span><br><span class="line">    bound = <span class="built_in">min</span>((<span class="built_in">float</span>(img.size[<span class="number">0</span>]) / img.size[<span class="number">1</span>]) / (w**<span class="number">2</span>),</span><br><span class="line">                (<span class="built_in">float</span>(img.size[<span class="number">1</span>]) / img.size[<span class="number">0</span>]) / (h**<span class="number">2</span>))</span><br><span class="line">    scale_max = <span class="built_in">min</span>(scale[<span class="number">1</span>], bound)</span><br><span class="line">    scale_min = <span class="built_in">min</span>(scale[<span class="number">0</span>], bound)</span><br><span class="line"></span><br><span class="line">    target_area = img.size[<span class="number">0</span>] * img.size[<span class="number">1</span>] * np.random.uniform(scale_min,</span><br><span class="line">                                                                scale_max)</span><br><span class="line">    target_size = math.sqrt(target_area)</span><br><span class="line">    w = <span class="built_in">int</span>(target_size * w)</span><br><span class="line">    h = <span class="built_in">int</span>(target_size * h)</span><br><span class="line"></span><br><span class="line">    i = np.random.randint(<span class="number">0</span>, img.size[<span class="number">0</span>] - w + <span class="number">1</span>)</span><br><span class="line">    j = np.random.randint(<span class="number">0</span>, img.size[<span class="number">1</span>] - h + <span class="number">1</span>)</span><br><span class="line"></span><br><span class="line">    img = img.crop((i, j, i + w, j + h))</span><br><span class="line">    img = img.resize((train_parameters[<span class="string">&#x27;input_size&#x27;</span>][<span class="number">1</span>], train_parameters[<span class="string">&#x27;input_size&#x27;</span>][<span class="number">2</span>]), Image.BILINEAR)</span><br><span class="line">    <span class="keyword">return</span> img</span><br><span class="line"></span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">def</span> <span class="title">rotate_image</span>(<span class="params">img</span>):</span></span><br><span class="line">    <span class="string">&quot;&quot;&quot;</span></span><br><span class="line"><span class="string">    图像增强，增加随机旋转角度</span></span><br><span class="line"><span class="string">    &quot;&quot;&quot;</span></span><br><span class="line">    angle = np.random.randint(-<span class="number">14</span>, <span class="number">15</span>)</span><br><span class="line">    img = img.rotate(angle)</span><br><span class="line">    <span class="keyword">return</span> img</span><br><span class="line"></span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">def</span> <span class="title">random_brightness</span>(<span class="params">img</span>):</span></span><br><span class="line">    <span class="string">&quot;&quot;&quot;</span></span><br><span class="line"><span class="string">    图像增强，亮度调整</span></span><br><span class="line"><span class="string">    :param img:</span></span><br><span class="line"><span class="string">    :return:</span></span><br><span class="line"><span class="string">    &quot;&quot;&quot;</span></span><br><span class="line">    prob = np.random.uniform(<span class="number">0</span>, <span class="number">1</span>)</span><br><span class="line">    <span class="keyword">if</span> prob &lt; train_parameters[<span class="string">&#x27;image_enhance_strategy&#x27;</span>][<span class="string">&#x27;brightness_prob&#x27;</span>]:</span><br><span class="line">        brightness_delta = train_parameters[<span class="string">&#x27;image_enhance_strategy&#x27;</span>][<span class="string">&#x27;brightness_delta&#x27;</span>]</span><br><span class="line">        delta = np.random.uniform(-brightness_delta, brightness_delta) + <span class="number">1</span></span><br><span class="line">        img = ImageEnhance.Brightness(img).enhance(delta)</span><br><span class="line">    <span class="keyword">return</span> img</span><br><span class="line"></span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">def</span> <span class="title">random_contrast</span>(<span class="params">img</span>):</span></span><br><span class="line">    <span class="string">&quot;&quot;&quot;</span></span><br><span class="line"><span class="string">    图像增强，对比度调整</span></span><br><span class="line"><span class="string">    :param img:</span></span><br><span class="line"><span class="string">    :return:</span></span><br><span class="line"><span class="string">    &quot;&quot;&quot;</span></span><br><span class="line">    prob = np.random.uniform(<span class="number">0</span>, <span class="number">1</span>)</span><br><span class="line">    <span class="keyword">if</span> prob &lt; train_parameters[<span class="string">&#x27;image_enhance_strategy&#x27;</span>][<span class="string">&#x27;contrast_prob&#x27;</span>]:</span><br><span class="line">        contrast_delta = train_parameters[<span class="string">&#x27;image_enhance_strategy&#x27;</span>][<span class="string">&#x27;contrast_delta&#x27;</span>]</span><br><span class="line">        delta = np.random.uniform(-contrast_delta, contrast_delta) + <span class="number">1</span></span><br><span class="line">        img = ImageEnhance.Contrast(img).enhance(delta)</span><br><span class="line">    <span class="keyword">return</span> img</span><br><span class="line"></span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">def</span> <span class="title">random_saturation</span>(<span class="params">img</span>):</span></span><br><span class="line">    <span class="string">&quot;&quot;&quot;</span></span><br><span class="line"><span class="string">    图像增强，饱和度调整</span></span><br><span class="line"><span class="string">    :param img:</span></span><br><span class="line"><span class="string">    :return:</span></span><br><span class="line"><span class="string">    &quot;&quot;&quot;</span></span><br><span class="line">    prob = np.random.uniform(<span class="number">0</span>, <span class="number">1</span>)</span><br><span class="line">    <span class="keyword">if</span> prob &lt; train_parameters[<span class="string">&#x27;image_enhance_strategy&#x27;</span>][<span class="string">&#x27;saturation_prob&#x27;</span>]:</span><br><span class="line">        saturation_delta = train_parameters[<span class="string">&#x27;image_enhance_strategy&#x27;</span>][<span class="string">&#x27;saturation_delta&#x27;</span>]</span><br><span class="line">        delta = np.random.uniform(-saturation_delta, saturation_delta) + <span class="number">1</span></span><br><span class="line">        img = ImageEnhance.Color(img).enhance(delta)</span><br><span class="line">    <span class="keyword">return</span> img</span><br><span class="line"></span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">def</span> <span class="title">random_hue</span>(<span class="params">img</span>):</span></span><br><span class="line">    <span class="string">&quot;&quot;&quot;</span></span><br><span class="line"><span class="string">    图像增强，色度调整</span></span><br><span class="line"><span class="string">    :param img:</span></span><br><span class="line"><span class="string">    :return:</span></span><br><span class="line"><span class="string">    &quot;&quot;&quot;</span></span><br><span class="line">    prob = np.random.uniform(<span class="number">0</span>, <span class="number">1</span>)</span><br><span class="line">    <span class="keyword">if</span> prob &lt; train_parameters[<span class="string">&#x27;image_enhance_strategy&#x27;</span>][<span class="string">&#x27;hue_prob&#x27;</span>]:</span><br><span class="line">        hue_delta = train_parameters[<span class="string">&#x27;image_enhance_strategy&#x27;</span>][<span class="string">&#x27;hue_delta&#x27;</span>]</span><br><span class="line">        delta = np.random.uniform(-hue_delta, hue_delta)</span><br><span class="line">        img_hsv = np.array(img.convert(<span class="string">&#x27;HSV&#x27;</span>))</span><br><span class="line">        img_hsv[:, :, <span class="number">0</span>] = img_hsv[:, :, <span class="number">0</span>] + delta</span><br><span class="line">        img = Image.fromarray(img_hsv, mode=<span class="string">&#x27;HSV&#x27;</span>).convert(<span class="string">&#x27;RGB&#x27;</span>)</span><br><span class="line">    <span class="keyword">return</span> img</span><br><span class="line"></span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">def</span> <span class="title">distort_color</span>(<span class="params">img</span>):</span></span><br><span class="line">    <span class="string">&quot;&quot;&quot;</span></span><br><span class="line"><span class="string">    概率的图像增强</span></span><br><span class="line"><span class="string">    :param img:</span></span><br><span class="line"><span class="string">    :return:</span></span><br><span class="line"><span class="string">    &quot;&quot;&quot;</span></span><br><span class="line">    prob = np.random.uniform(<span class="number">0</span>, <span class="number">1</span>)</span><br><span class="line">    <span class="comment"># Apply different distort order</span></span><br><span class="line">    <span class="keyword">if</span> prob &lt; <span class="number">0.35</span>:</span><br><span class="line">        img = random_brightness(img)</span><br><span class="line">        img = random_contrast(img)</span><br><span class="line">        img = random_saturation(img)</span><br><span class="line">        img = random_hue(img)</span><br><span class="line">    <span class="keyword">elif</span> prob &lt; <span class="number">0.7</span>:</span><br><span class="line">        img = random_brightness(img)</span><br><span class="line">        img = random_saturation(img)</span><br><span class="line">        img = random_hue(img)</span><br><span class="line">        img = random_contrast(img)</span><br><span class="line">    <span class="keyword">return</span> img</span><br></pre></td></tr></table></figure>
+<p>​ 一些常规的对图象进行的预处理，为了之后的训练得到较好的效果。</p>
+</li>
+</ul>
+
+    </article>
+    <!-- license  -->
+    
+    <!-- paginator  -->
+    <ul class="post-paginator">
+        <li class="next">
+            
+        </li>
+        <li class="previous">
+            
+                <div class="prevSlogan">Previous Post</div>
+                <a href= "/2021/01/28/2021-1-28/" title= "图像特征匹配开发手记Vol_5">
+                    <div class="prevTitle">图像特征匹配开发手记Vol_5</div>
+                </a>
+            
+        </li>
+    </ul>
+    <!-- 评论插件 -->
+    <!-- 来必力City版安装代码 -->
+
+<!-- City版安装代码已完成 -->
+    
+    
+    <!-- gitalk评论 -->
+
+    <!-- utteranc评论 -->
+
+    <!-- partial('_partial/comment/changyan') -->
+    <!--PC版-->
+
+
+    
+    
+
+    <!-- 评论 -->
+</main>
+            <!-- profile -->
+            
+        </div>
+        <footer class="footer footer-unloaded">
+    <!-- social  -->
+    
+    <div class="social">
+        
+    
+        
+            
+                <a href="mailto:1053507223D@qq.com" class="iconfont-archer email" title=email ></a>
+            
+        
+    
+        
+            
+                <a href="http://boooil.github.io" class="iconfont-archer github" target="_blank" title=github></a>
+            
+        
+    
+        
+            
+                <span class="iconfont-archer wechat" title=wechat>
+                  
+                  <img class="profile-qr" src="/assets/wechat_qr.png" />
+                </span>
+            
+        
+    
+        
+    
+        
+    
+        
+    
+        
+    
+        
+    
+        
+    
+        
+    
+        
+    
+        
+    
+        
+    
+        
+    
+        
+    
+        
+            
+                <a href="/assets/bilibili_qr.png" class="iconfont-archer bilibili" target="_blank" title=bilibili></a>
+            
+        
+    
+        
+    
+        
+    
+        
+    
+        
+    
+        
+    
+        
+    
+        
+    
+
+    </div>
+    
+    <!-- powered by Hexo  -->
+    <div class="copyright">
+        <span id="hexo-power">Powered by <a href="https://hexo.io/" target="_blank">Hexo</a></span><span class="iconfont-archer power">&#xe635;</span><span id="theme-info">theme <a href="https://github.com/fi3ework/hexo-theme-archer" target="_blank">Archer</a></span>
+    </div>
+    <!-- 不蒜子  -->
+    
+</footer>
+    </div>
+    <!-- toc -->
+    
+    <div class="back-top iconfont-archer">&#xe639;</div>
+    <div class="sidebar sidebar-hide">
+    <ul class="sidebar-tabs sidebar-tabs-active-0">
+        <li class="sidebar-tab-archives"><span class="iconfont-archer">&#xe67d;</span><span class="tab-name">Archive</span></li>
+        <li class="sidebar-tab-tags"><span class="iconfont-archer">&#xe61b;</span><span class="tab-name">Tag</span></li>
+        <li class="sidebar-tab-categories"><span class="iconfont-archer">&#xe666;</span><span class="tab-name">Cate</span></li>
+    </ul>
+    <div class="sidebar-content sidebar-content-show-archive">
+          <div class="sidebar-panel-archives">
+    <!-- 在ejs中将archive按照时间排序 -->
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    <div class="total-and-search">
+        <div class="total-archive">
+        Total : 8
+        </div>
+        <!-- search  -->
+        
+    </div>
+    
+    <div class="post-archive">
+    
+    
+    
+    
+    <div class="archive-year"> 2021 </div>
+    <ul class="year-list">
+    
+    
+        <li class="archive-post-item">
+            <span class="archive-post-date">01/30</span><a class="archive-post-title" href= "/2021/01/30/2021-1-30/" >植物病虫害识别系统开发手记Vol_1</a>
+        </li>
+    
+    
+        <li class="archive-post-item">
+            <span class="archive-post-date">01/28</span><a class="archive-post-title" href= "/2021/01/28/2021-1-28/" >图像特征匹配开发手记Vol_5</a>
+        </li>
+    
+    
+        <li class="archive-post-item">
+            <span class="archive-post-date">01/27</span><a class="archive-post-title" href= "/2021/01/27/2021-1-27/" >图像特征匹配开发手记Vol_4</a>
+        </li>
+    
+    
+        <li class="archive-post-item">
+            <span class="archive-post-date">01/26</span><a class="archive-post-title" href= "/2021/01/26/2021-1-26/" >图像特征匹配开发手记Vol_3</a>
+        </li>
+    
+    
+        <li class="archive-post-item">
+            <span class="archive-post-date">01/24</span><a class="archive-post-title" href= "/2021/01/24/2021-1-24/" >图像特征匹配开发手记Vol_2</a>
+        </li>
+    
+    
+        <li class="archive-post-item">
+            <span class="archive-post-date">01/23</span><a class="archive-post-title" href= "/2021/01/23/2021-1-23/" >Boil的小玩意儿分享Vol_1</a>
+        </li>
+    
+    
+        <li class="archive-post-item">
+            <span class="archive-post-date">01/22</span><a class="archive-post-title" href= "/2021/01/22/2021-1-22/" >图像特征匹配开发手记Vol_1</a>
+        </li>
+    
+    
+        <li class="archive-post-item">
+            <span class="archive-post-date">01/21</span><a class="archive-post-title" href= "/2021/01/21/2021-1-21/" >Hello World</a>
+        </li>
+    
+    </div>
+  </div>
+        <div class="sidebar-panel-tags">
+    <div class="sidebar-tags-name">
+    
+        <span class="sidebar-tag-name" data-tags="杂谈"><span class="iconfont-archer">&#xe606;</span>杂谈</span>
+    
+        <span class="sidebar-tag-name" data-tags="开发"><span class="iconfont-archer">&#xe606;</span>开发</span>
+    
+    </div>
+    <div class="iconfont-archer sidebar-tags-empty">&#xe678;</div>
+    <div class="tag-load-fail" style="display: none; color: #ccc; font-size: 0.6rem;">
+    缺失模块。<br/>
+    1、请确保node版本大于6.2<br/>
+    2、在博客根目录（注意不是archer根目录）执行以下命令：<br/>
+    <span style="color: #f75357; font-size: 1rem; line-height: 2rem;">npm i hexo-generator-json-content --save</span><br/>
+    3、在根目录_config.yml里添加配置：
+    <pre style="color: #787878; font-size: 0.6rem;">
+jsonContent:
+  meta: false
+  pages: false
+  posts:
+    title: true
+    date: true
+    path: true
+    text: false
+    raw: false
+    content: false
+    slug: false
+    updated: false
+    comments: false
+    link: false
+    permalink: false
+    excerpt: false
+    categories: true
+    tags: true</pre>
+    </div> 
+    <div class="sidebar-tags-list"></div>
+</div>
+        <div class="sidebar-panel-categories">
+    <div class="sidebar-categories-name">
+    
+    </div>
+    <div class="iconfont-archer sidebar-categories-empty">&#xe678;</div>
+    <div class="sidebar-categories-list"></div>
+</div>
+    </div>
+</div> 
+    <script>
+    var siteMeta = {
+        root: "/",
+        author: "Boooil"
+    }
+</script>
+    <!-- CDN failover -->
+    <script src="https://cdn.jsdelivr.net/npm/jquery@3.3.1/dist/jquery.min.js"></script>
+    <script type="text/javascript">
+        if (typeof window.$ === 'undefined')
+        {
+            console.warn('jquery load from jsdelivr failed, will load local script')
+            document.write('<script src="/lib/jquery.min.js">\x3C/script>')
+        }
+    </script>
+    <script src="/scripts/main.js"></script>
+    <!-- algolia -->
+    
+    <!-- busuanzi  -->
+    
+    <!-- CNZZ  -->
+    
+    </div>
+    <!-- async load share.js -->
+    
+        <script src="/scripts/share.js" async></script>    
+     
+    </body>
+</html>
+
+
