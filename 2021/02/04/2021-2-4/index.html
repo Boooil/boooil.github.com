@@ -20,22 +20,24 @@
     <meta name="keywords" content="hexo,hexo-theme,hexo-blog">
     
     <meta name="description" content="">
-    <meta name="description" content="关于算法的优化">
+    <meta name="description" content="获取手机相册图片及模块组合">
 <meta property="og:type" content="article">
-<meta property="og:title" content="图像特征匹配开发手记Vol_2">
-<meta property="og:url" content="http://boooil.github.io/2021/01/24/2021-1-24/index.html">
+<meta property="og:title" content="图像特征匹配开发手记Vol_9">
+<meta property="og:url" content="http://boooil.github.io/2021/02/04/2021-2-4/index.html">
 <meta property="og:site_name" content="我的博客">
-<meta property="og:description" content="关于算法的优化">
+<meta property="og:description" content="获取手机相册图片及模块组合">
 <meta property="og:locale" content="zh_CN">
-<meta property="article:published_time" content="2021-01-24T13:03:16.000Z">
-<meta property="article:modified_time" content="2021-01-24T13:05:26.857Z">
+<meta property="og:image" content="https://img.imgdb.cn/item/601c04733ffa7d37b386c275.jpg">
+<meta property="article:published_time" content="2021-02-04T14:25:50.000Z">
+<meta property="article:modified_time" content="2021-02-04T14:28:11.292Z">
 <meta property="article:author" content="Boooil">
 <meta property="article:tag" content="开发">
 <meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="https://img.imgdb.cn/item/601c04733ffa7d37b386c275.jpg">
     <meta http-equiv="Cache-control" content="no-cache">
     <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1"/>
     
-    <title>图像特征匹配开发手记Vol_2 · Boooil&#39;s BLOG</title>
+    <title>图像特征匹配开发手记Vol_9 · Boooil&#39;s BLOG</title>
     <style type="text/css">
     @font-face {
         font-family: 'Oswald-Regular';
@@ -230,7 +232,7 @@
                 <a href="/" >Boooil&#39;s BLOG.</a>
             </div>
             <div class="post-title">
-                <a href="#" class="post-name">图像特征匹配开发手记Vol_2</a>
+                <a href="#" class="post-name">图像特征匹配开发手记Vol_9</a>
             </div>
     </div>
     
@@ -260,7 +262,7 @@ height:50vh;
         <h1 class="intro-title">
             <!-- 主页  -->
             
-            图像特征匹配开发手记Vol_2
+            图像特征匹配开发手记Vol_9
             <!-- 404 -->
             
         </h1>
@@ -286,7 +288,7 @@ height:50vh;
                 
                 <div class="post-intro-meta">
                     <span class="post-intro-calander iconfont-archer">&#xe676;</span>
-                    <span class="post-intro-time">2021/01/24</span>
+                    <span class="post-intro-time">2021/02/04</span>
                     
                     <span class="shareWrapper">
                         <span class="iconfont-archer shareIcon">&#xe71d;</span>
@@ -405,41 +407,38 @@ height:50vh;
         <div class="container container-unloaded">
             <main class="main post-page">
     <article class="article-entry">
-        <h3 id="关于算法的优化"><a href="#关于算法的优化" class="headerlink" title="关于算法的优化"></a><strong>关于算法的优化</strong><a id="more"></a></h3><hr>
+        <h3 id="获取手机相册图片及模块组合"><a href="#获取手机相册图片及模块组合" class="headerlink" title="获取手机相册图片及模块组合"></a>获取手机相册图片及模块组合<a id="more"></a></h3><hr>
+<div align=center><img src="https://img.imgdb.cn/item/601c04733ffa7d37b386c275.jpg"/></div>
+
 <ul>
-<li><p>区别</p>
-<p>基于特征的匹配分为特征点提取和匹配两个步骤，本篇主要针对特征点提取三种方法进行比较，分别是SIFT，SURF以及ORB三种方法，这三种方法在OpenCV里面都已实现。SURF基本就是SIFT的全面升级版，有 SURF基本就不用考虑SIFT，而ORB的强点在于计算时间，以下具体比较：</p>
-<p>计算速度：       ORB&gt;&gt;SURF&gt;&gt;SIFT（各差一个量级）</p>
-<p>旋转鲁棒性：     SURF&gt;ORB~SIFT（表示差不多）</p>
-<p>模糊鲁棒性：     SURF&gt;ORB~SIFT</p>
-<p>尺度变换鲁棒性： SURF&gt;SIFT&gt;ORB（ORB并不具备尺度变换性）</p>
-<p> 所以结论就是，如果对计算实时性要求非常高，可选用ORB算法，但基本要保证正对拍摄；如果对实行性要求稍高，可以选择SURF；基本不用SIFT。</p>
+<li><p>手机相册图片获取</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">if</span> (ContextCompat.checkSelfPermission(<span class="keyword">this</span>, Manifest.permission.CAMERA) != PackageManager.PERMISSION_GRANTED) &#123;</span><br><span class="line">  String[] perms = &#123;Manifest.permission.READ_EXTERNAL_STORAGE, Manifest.permission.WRITE_EXTERNAL_STORAGE, Manifest.permission.CAMERA&#125;;</span><br><span class="line">  ActivityCompat.requestPermissions(<span class="keyword">this</span>, perms, IMAGE);</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>动态获取手机的权限。</p>
+<p>仅仅在Manifest中加入静态权限声明是不行的，一种方法是手动在手机设置应用权限管理中开启需要的权限，另一种方法便是使用上述代码动态获取权限。</p>
+<p>光动态申请权限还不够，还需要在Manifest中的&lt;application&gt;标签下加上如下代码：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">android:requestLegacyExternalStorage=<span class="string">&quot;true&quot;</span></span><br></pre></td></tr></table></figure>
+<p>原理尚未研究。</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">private</span> <span class="keyword">void</span> <span class="title">openAlbum</span><span class="params">()</span> </span>&#123;</span><br><span class="line">    <span class="comment">//调用相册</span></span><br><span class="line">    Intent intent = <span class="keyword">new</span> Intent(Intent.ACTION_PICK,</span><br><span class="line">    android.provider.MediaStore.Images.Media.EXTERNAL_CONTENT_URI);</span><br><span class="line">    startActivityForResult(intent, IMAGE);</span><br><span class="line">&#125;</span><br><span class="line"><span class="meta">@Override</span></span><br><span class="line"><span class="function"><span class="keyword">protected</span> <span class="keyword">void</span> <span class="title">onActivityResult</span><span class="params">(<span class="keyword">int</span> requestCode, <span class="keyword">int</span> resultCode, Intent data)</span> </span>&#123;</span><br><span class="line"><span class="keyword">super</span>.onActivityResult(requestCode, resultCode, data);</span><br><span class="line">    <span class="comment">//获取图片路径</span></span><br><span class="line">    <span class="keyword">if</span> (requestCode == IMAGE &amp;&amp; resultCode == Activity.RESULT_OK &amp;&amp; data != <span class="keyword">null</span>) &#123;</span><br><span class="line">    Uri selectedImage = data.getData();</span><br><span class="line">    String[] filePathColumns = &#123;MediaStore.Images.Media.DATA&#125;;</span><br><span class="line">    Cursor c = getContentResolver().query(selectedImage, filePathColumns, <span class="keyword">null</span>, <span class="keyword">null</span>, <span class="keyword">null</span>);</span><br><span class="line">    c.moveToFirst();</span><br><span class="line">    <span class="keyword">int</span> columnIndex = c.getColumnIndex(filePathColumns[<span class="number">0</span>]);</span><br><span class="line">    imagePath = c.getString(columnIndex);</span><br><span class="line">    System.out.println(<span class="string">&quot;imagePath:&quot;</span>+imagePath);</span><br><span class="line">    showImage(imagePath);</span><br><span class="line">    c.close();</span><br><span class="line">&#125;</span><br><span class="line">&#125;</span><br><span class="line"><span class="comment">//加载图片</span></span><br><span class="line"><span class="function"><span class="keyword">private</span> <span class="keyword">void</span> <span class="title">showImage</span><span class="params">(String imaePath)</span></span>&#123;</span><br><span class="line">    img = (ImageView)findViewById(R.id.album_img);</span><br><span class="line">    Bitmap bm = BitmapFactory.decodeFile(imaePath);</span><br><span class="line">    bm = Bitmap.createScaledBitmap(bm,<span class="number">960</span>,<span class="number">540</span>,<span class="keyword">true</span>);</span><br><span class="line">    img.setImageBitmap(bm);</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>这里的<strong>openAlbum()**创建了一个新的intent，跳转至打开手机图库，</strong>onActivityResult()<strong>便是跳转之后要进行进行的操作。imagePath便是用户选择的图片路径。</strong>showImage(String imaePath)**是一个功能函数，它将图片加载到imageview控件上。</p>
+</li>
+<li><p>Intent跳转</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line">jump_button.setOnClickListener(<span class="keyword">new</span> View.OnClickListener() &#123;</span><br><span class="line">    <span class="meta">@Override</span></span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">onClick</span><span class="params">(View v)</span> </span>&#123;</span><br><span class="line">    Intent intent = <span class="keyword">new</span> Intent(getApplicationContext(),TestActivity.class);</span><br><span class="line">    <span class="comment">//传值给下一个Activity</span></span><br><span class="line">    intent.putExtra(<span class="string">&quot;extra_data&quot;</span>, imagePath);</span><br><span class="line">    <span class="comment">//启动Intent</span></span><br><span class="line">    startActivity(intent);</span><br><span class="line">    &#125;</span><br><span class="line">&#125;);</span><br></pre></td></tr></table></figure>
+<p>对跳转按钮绑定监听器，跳转至匹配模块，并转递imagePath参数。</p>
+</li>
+<li><p>Intent接收</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">//获取上一个Activity传过来的值</span></span><br><span class="line">Intent intent = getIntent();</span><br><span class="line">User_FileName = intent.getStringExtra(<span class="string">&quot;extra_data&quot;</span>);</span><br><span class="line">System.out.println(<span class="string">&quot;获取上一个Activity传过来的值:&quot;</span>+User_FileName);</span><br></pre></td></tr></table></figure></li>
+<li><p>修改File_list预处理模块</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br></pre></td><td class="code"><pre><span class="line">AreaSearch areaSearch = <span class="keyword">new</span> AreaSearch();</span><br><span class="line">FileName fileName = <span class="keyword">new</span> FileName();</span><br><span class="line"></span><br><span class="line">List&lt;District&gt; district_list = areaSearch.Creat_District();</span><br><span class="line">LatLng location = <span class="keyword">new</span> LatLng(<span class="number">40.005835</span>,<span class="number">116.359258</span>);</span><br><span class="line"><span class="keyword">int</span> district_num = areaSearch.getDistrict(location,district_list);</span><br><span class="line">System.out.println(<span class="string">&quot;当前坐标区号&quot;</span>+district_num);</span><br><span class="line"></span><br><span class="line">String FilePath = <span class="string">&quot;pic_set/&quot;</span>+Integer.toString(district_num);</span><br><span class="line">System.out.println(<span class="string">&quot;当前目录名：&quot;</span>+FilePath);</span><br><span class="line"></span><br><span class="line">List&lt;String&gt; File_list = <span class="keyword">new</span> ArrayList&lt;String&gt;(fileName.getFilesAllName(FilePath,<span class="keyword">this</span>));</span><br><span class="line"></span><br><span class="line">File_list.add(<span class="number">0</span>, String.valueOf(district_num));</span><br><span class="line"><span class="comment">//File_list.add(0,&quot;/assets/pic_set/2/BoyDorm_1.jpg&quot;);//用户传入图片</span></span><br><span class="line">File_list.add(<span class="number">0</span>,User_FileName);<span class="comment">//用户传入图片</span></span><br><span class="line">task.execute(File_list);</span><br></pre></td></tr></table></figure>
+<p>将用户传入图片路径的内容改成由前一个Intent传来的参数。（原来测试时是提前写好的路径名）</p>
+</li>
+<li><p>AsyncTask部分的小修改</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">//Bitmap src_bitmap1= BitmapFactory.decodeStream(getClass().getResourceAsStream(TestFile_Path));</span></span><br><span class="line">Bitmap src_bitmap1= BitmapFactory.decodeFile(TestFile_Path);</span><br></pre></td></tr></table></figure>
+<p>原来通过路径获取bitmap所用方法是<strong>getResourceAsStream</strong>，这个函数用于调用assests文件夹下的图片。现在图片来自于手机，所以改用<strong>decodeFile</strong>。</p>
 </li>
 </ul>
-<p>经过测试，实际上SIFT和SURF在计算时给人的直观时间差并不大。而ORB算法的速度明显要高于前两者，并且能够明显的察觉到。</p>
-<p>SIFT和SURF算法可以使用BRUTEFORCE和FLANNBASED匹配器；而ORB只能使用BRUTEFORCE，使用FLANNBASED会报margin state不一致的错误，不知道为什么。</p>
 <hr>
-<ul>
-<li><p>基于匹配DMatch排序的优化算法</p>
-<p>DMatch类中有成员变量distance，即欧氏距离，这个距离越小越好（less is beter)，将得到的欧氏距离进行从小到大排序，最小的数值便是比较的两张图片的相似程度。</p>
-</li>
-</ul>
-<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line">List&lt;DMatch&gt; matches_list = matches.toList();<span class="comment">//将MatOfDMatch转为List,方便操作</span></span><br><span class="line">Collections.sort(matches_list, <span class="keyword">new</span> Comparator&lt;DMatch&gt;() &#123;</span><br><span class="line">   <span class="meta">@Override</span></span><br><span class="line">   <span class="function"><span class="keyword">public</span> <span class="keyword">int</span> <span class="title">compare</span><span class="params">(DMatch o1, DMatch o2)</span> </span>&#123;</span><br><span class="line">       <span class="keyword">return</span> (<span class="keyword">int</span>) (o1.distance-o2.distance);</span><br><span class="line">   &#125;</span><br><span class="line">&#125;);</span><br></pre></td></tr></table></figure>
-<p>​       比较的时候用到了Collection中的sort方法重写。</p>
-<p>​       可以直接将此处的最小distance作为评价依据，但是这个最小匹配点不一定可靠。所以我们在此基础上要进行RANSAC筛选。</p>
-<hr>
-<ul>
-<li>RANSAC</li>
-</ul>
-<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">double</span> max_dist = <span class="number">0</span>; <span class="keyword">double</span> min_dist = <span class="number">100</span>;</span><br><span class="line"><span class="keyword">for</span>( <span class="keyword">int</span> i = <span class="number">0</span>; i &lt; descriptors1.rows(); i++ )&#123; </span><br><span class="line">    <span class="keyword">double</span> dist = matches_list.get(i).distance;</span><br><span class="line">    <span class="keyword">if</span>( dist &lt; min_dist ) min_dist = dist;</span><br><span class="line">    <span class="keyword">if</span>( dist &gt; max_dist ) max_dist = dist;</span><br><span class="line">&#125;</span><br><span class="line">System.out.println(min_dist);</span><br><span class="line">System.out.println(max_dist);</span><br><span class="line">List&lt;DMatch&gt; good_matches_list = <span class="keyword">new</span>  ArrayList&lt;DMatch&gt;();</span><br><span class="line"><span class="keyword">for</span>( <span class="keyword">int</span> i = <span class="number">0</span>; i &lt; descriptors1.rows(); i++ )&#123;</span><br><span class="line">    <span class="keyword">if</span>( matches_list.get(i).distance &lt;= <span class="number">2</span>*min_dist)&#123;</span><br><span class="line">        good_matches_list.add( matches_list.get(i));</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-<p>​   找出matches里distance的最大值和最小值，将范围定位在（min，0.2*min）内，将这些匹配点筛选出来，作为good_matches（预筛选）。</p>
-<p>​   经过预筛选后，进行RANSAC算法提纯。</p>
-<p>​   RANSAC算法具体步骤参考博客<a target="_blank" rel="noopener" href="https://blog.csdn.net/liuhaitaowq/article/details/52503806">https://blog.csdn.net/liuhaitaowq/article/details/52503806</a></p>
-<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">//RANSAC优化  </span></span><br><span class="line"><span class="comment">//根据matches将特征点对齐,将坐标转换为float类型  </span></span><br><span class="line">List&lt;KeyPoint&gt; keypoint_1 = <span class="keyword">new</span> ArrayList&lt;KeyPoint&gt;();  </span><br><span class="line">List&lt;KeyPoint&gt; keypoint_2 = <span class="keyword">new</span> ArrayList&lt;KeyPoint&gt;();  </span><br><span class="line">keypoint_1 = kp1.toList();  </span><br><span class="line">keypoint_2 = kp2.toList();  </span><br><span class="line">List&lt;KeyPoint&gt; R_keypoint_1 = <span class="keyword">new</span> ArrayList&lt;KeyPoint&gt;();  </span><br><span class="line">List&lt;KeyPoint&gt; R_keypoint_2 = <span class="keyword">new</span> ArrayList&lt;KeyPoint&gt;();  </span><br><span class="line"><span class="keyword">for</span> (<span class="keyword">int</span> i=<span class="number">0</span>;i&lt;good_matches_list.size();i++) &#123;  </span><br><span class="line">    R_keypoint_1.add(keypoint_1.get(good_matches_list.get(i).queryIdx));  </span><br><span class="line">    R_keypoint_2.add(keypoint_2.get(good_matches_list.get(i).trainIdx));  </span><br><span class="line">    <span class="comment">//这两句话的理解：R_keypoint1是要存储img01中能与img02匹配的特征点，  </span></span><br><span class="line">    <span class="comment">//matches中存储了这些匹配点对的img01和img02的索引值  </span></span><br><span class="line">&#125;  </span><br><span class="line">List&lt;Point&gt; p1 = <span class="keyword">new</span> ArrayList&lt;Point&gt;();  </span><br><span class="line">List&lt;Point&gt; p2 = <span class="keyword">new</span> ArrayList&lt;Point&gt;();  </span><br><span class="line"><span class="keyword">for</span> (<span class="keyword">int</span> i=<span class="number">0</span>;i&lt;good_matches_list.size();i++)&#123;  </span><br><span class="line">    p1.add(R_keypoint_1.get(i).pt);  </span><br><span class="line">    p2.add(R_keypoint_2.get(i).pt);  </span><br><span class="line">&#125;  </span><br><span class="line">MatOfPoint2f mp1 = <span class="keyword">new</span> MatOfPoint2f();  </span><br><span class="line">mp1.fromList(p1);  </span><br><span class="line">MatOfPoint2f mp2 = <span class="keyword">new</span> MatOfPoint2f();  </span><br><span class="line">mp2.fromList(p2);  </span><br><span class="line">Mat Fundamental = <span class="keyword">new</span> Mat();  </span><br><span class="line">Mat m_RANSACStatus = <span class="keyword">new</span> Mat();<span class="comment">//用于存储RANSAC后每个点的状态  </span></span><br><span class="line">Fundamental = Calib3d.findFundamentalMat(mp1,mp2,RANSAC,<span class="number">3</span>,<span class="number">0.99</span>,m_RANSACStatus);  </span><br><span class="line"><span class="comment">//Fundamental = Calib3d.findHomography(mp1,mp2,RANSAC,10,m_RANSACStatus);  </span></span><br><span class="line">List&lt;KeyPoint&gt; RR_kp1_list = <span class="keyword">new</span> ArrayList&lt;KeyPoint&gt;();  </span><br><span class="line">List&lt;KeyPoint&gt; RR_kp2_list = <span class="keyword">new</span> ArrayList&lt;KeyPoint&gt;();  </span><br><span class="line">List&lt;DMatch&gt; RR_match_list = <span class="keyword">new</span> ArrayList&lt;DMatch&gt;();  </span><br><span class="line"><span class="keyword">int</span> index = <span class="number">0</span>;  </span><br><span class="line"><span class="keyword">for</span>(<span class="keyword">int</span> i=<span class="number">0</span>;i&lt;good_matches_list.size();i++)&#123;  </span><br><span class="line">    <span class="keyword">double</span>[] d = m_RANSACStatus.get(i,<span class="number">0</span>);  </span><br><span class="line">    <span class="keyword">if</span>(d[<span class="number">0</span>]!=<span class="number">0</span>)&#123;  </span><br><span class="line">        RR_kp1_list.add(keypoint_1.get(i));  </span><br><span class="line">        RR_kp2_list.add(keypoint_2.get(i));  </span><br><span class="line">        good_matches_list.get(i).queryIdx=index;  </span><br><span class="line">        good_matches_list.get(i).trainIdx=index;  </span><br><span class="line">        RR_match_list.add(good_matches_list.get(i));  </span><br><span class="line">        index++;  </span><br><span class="line">    &#125;  </span><br><span class="line">&#125;  </span><br><span class="line">Collections.sort(RR_match_list, <span class="keyword">new</span> Comparator&lt;DMatch&gt;() &#123;  </span><br><span class="line"><span class="meta">@Override</span>  </span><br><span class="line"><span class="function"><span class="keyword">public</span> <span class="keyword">int</span> <span class="title">compare</span><span class="params">(DMatch o1, DMatch o2)</span> </span>&#123;  </span><br><span class="line">        <span class="keyword">return</span> (<span class="keyword">int</span>) (o1.distance-o2.distance);  </span><br><span class="line">    &#125;  </span><br><span class="line">&#125;);  </span><br><span class="line">MatOfKeyPoint RR_kp1 = <span class="keyword">new</span> MatOfKeyPoint();  </span><br><span class="line">RR_kp1.fromList(RR_kp1_list);  </span><br><span class="line">MatOfKeyPoint RR_kp2 = <span class="keyword">new</span> MatOfKeyPoint();  </span><br><span class="line">RR_kp2.fromList(RR_kp2_list); </span><br><span class="line">MatOfDMatch RR_match = <span class="keyword">new</span> MatOfDMatch();</span><br><span class="line">RR_match.fromList(RR_match_list);</span><br></pre></td></tr></table></figure>
-<p>​   RR_Match就是经过RANSAC算法后的匹配DMatch结果，将此DMatch的distance作为评价的指标。</p>
-<hr>
-<p>SURF+FLANNBASED和ORB+BRUTEFORCE的组合，前者准确，后者快。</p>
-<p>前者需要14秒左右，后者仅需要5秒左右。对于一个软件来说，匹配一次14秒的缓慢无疑是灾难性的…..但是后者的准确性和泛用性也是一个问题。这还是一个有待解决的问题。</p>
+<p>至此，整个项目的基本流程已经搭建完成。</p>
+<p>目前需要解决的问题是<strong>完善数据集</strong>，<strong>制定并完善评分机制</strong>，<strong>完善UI逻辑</strong>。</p>
 
     </article>
     <!-- license  -->
@@ -448,17 +447,12 @@ height:50vh;
     <ul class="post-paginator">
         <li class="next">
             
-                <div class="nextSlogan">Next Post</div>
-                <a href= "/2021/01/26/2021-1-26/" title= "图像特征匹配开发手记Vol_3">
-                    <div class="nextTitle">图像特征匹配开发手记Vol_3</div>
-                </a>
-            
         </li>
         <li class="previous">
             
                 <div class="prevSlogan">Previous Post</div>
-                <a href= "/2021/01/23/2021-1-23/" title= "Boil的小玩意儿分享Vol_1">
-                    <div class="prevTitle">Boil的小玩意儿分享Vol_1</div>
+                <a href= "/2021/02/03/2021-2-3/" title= "图像特征匹配开发手记Vol_8">
+                    <div class="prevTitle">图像特征匹配开发手记Vol_8</div>
                 </a>
             
         </li>
