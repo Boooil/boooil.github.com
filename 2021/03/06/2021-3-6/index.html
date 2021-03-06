@@ -28,7 +28,7 @@
 <meta property="og:description" content="部署FLASK项目到阿里云服务器">
 <meta property="og:locale" content="zh_CN">
 <meta property="article:published_time" content="2021-03-06T02:31:07.000Z">
-<meta property="article:modified_time" content="2021-03-06T02:33:56.460Z">
+<meta property="article:modified_time" content="2021-03-06T02:46:56.758Z">
 <meta property="article:author" content="Boooil">
 <meta property="article:tag" content="开发">
 <meta name="twitter:card" content="summary">
@@ -429,6 +429,11 @@ height:50vh;
 <figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">sudo fuser -k 1426&#x2F;tcp</span><br></pre></td></tr></table></figure>
 <p>另一个方法是</p>
 <figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line">创建pid文件</span><br><span class="line">touch uwsgi.pid</span><br><span class="line"></span><br><span class="line">在uwsgi.ini文件中添加pid文件的路径</span><br><span class="line">pidfile&#x3D;%(chdir)&#x2F;uwsgi.pid</span><br><span class="line"></span><br><span class="line">执行命令停止服务</span><br><span class="line">uwsgi --stop uwsgi.pid</span><br></pre></td></tr></table></figure>
+<hr>
+<p><strong>为什么要用uwsgi？</strong></p>
+<p>其实在将项目代码部署到服务器上后，直接执行</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">python app.py</span><br></pre></td></tr></table></figure>
+<p>便可以看到网页效果，但是由于flask自带的服务器只能用来测试，性能并不好，不能用于正式发布，所以还要用uwsgi服务器，更高效稳定的处理静态资源。</p>
 
     </article>
     <!-- license  -->
@@ -679,50 +684,6 @@ height:50vh;
     
     
     
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
     <div class="total-and-search">
         <div class="total-archive">
         Total : 14
@@ -814,9 +775,9 @@ height:50vh;
         <div class="sidebar-panel-tags">
     <div class="sidebar-tags-name">
     
-        <span class="sidebar-tag-name" data-tags="开发"><span class="iconfont-archer">&#xe606;</span>开发</span>
-    
         <span class="sidebar-tag-name" data-tags="杂谈"><span class="iconfont-archer">&#xe606;</span>杂谈</span>
+    
+        <span class="sidebar-tag-name" data-tags="开发"><span class="iconfont-archer">&#xe606;</span>开发</span>
     
     </div>
     <div class="iconfont-archer sidebar-tags-empty">&#xe678;</div>
