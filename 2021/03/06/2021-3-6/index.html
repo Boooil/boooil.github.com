@@ -20,22 +20,22 @@
     <meta name="keywords" content="hexo,hexo-theme,hexo-blog">
     
     <meta name="description" content="">
-    <meta name="description" content="算法的后续优化">
+    <meta name="description" content="部署FLASK项目到阿里云服务器">
 <meta property="og:type" content="article">
-<meta property="og:title" content="图像特征匹配开发手记Vol_3">
-<meta property="og:url" content="http://boooil.github.io/2021/01/26/2021-1-26/index.html">
+<meta property="og:title" content="植物病虫害识别系统开发手记Vol_2">
+<meta property="og:url" content="http://boooil.github.io/2021/03/06/2021-3-6/index.html">
 <meta property="og:site_name" content="我的博客">
-<meta property="og:description" content="算法的后续优化">
+<meta property="og:description" content="部署FLASK项目到阿里云服务器">
 <meta property="og:locale" content="zh_CN">
-<meta property="article:published_time" content="2021-01-26T03:29:31.000Z">
-<meta property="article:modified_time" content="2021-01-26T04:02:34.302Z">
+<meta property="article:published_time" content="2021-03-06T02:31:07.000Z">
+<meta property="article:modified_time" content="2021-03-06T02:33:56.460Z">
 <meta property="article:author" content="Boooil">
 <meta property="article:tag" content="开发">
 <meta name="twitter:card" content="summary">
     <meta http-equiv="Cache-control" content="no-cache">
     <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1"/>
     
-    <title>图像特征匹配开发手记Vol_3 · Boooil&#39;s BLOG</title>
+    <title>植物病虫害识别系统开发手记Vol_2 · Boooil&#39;s BLOG</title>
     <style type="text/css">
     @font-face {
         font-family: 'Oswald-Regular';
@@ -230,7 +230,7 @@
                 <a href="/" >Boooil&#39;s BLOG.</a>
             </div>
             <div class="post-title">
-                <a href="#" class="post-name">图像特征匹配开发手记Vol_3</a>
+                <a href="#" class="post-name">植物病虫害识别系统开发手记Vol_2</a>
             </div>
     </div>
     
@@ -260,7 +260,7 @@ height:50vh;
         <h1 class="intro-title">
             <!-- 主页  -->
             
-            图像特征匹配开发手记Vol_3
+            植物病虫害识别系统开发手记Vol_2
             <!-- 404 -->
             
         </h1>
@@ -286,7 +286,7 @@ height:50vh;
                 
                 <div class="post-intro-meta">
                     <span class="post-intro-calander iconfont-archer">&#xe676;</span>
-                    <span class="post-intro-time">2021/01/26</span>
+                    <span class="post-intro-time">2021/03/06</span>
                     
                     <span class="shareWrapper">
                         <span class="iconfont-archer shareIcon">&#xe71d;</span>
@@ -405,47 +405,30 @@ height:50vh;
         <div class="container container-unloaded">
             <main class="main post-page">
     <article class="article-entry">
-        <h3 id="算法的后续优化"><a href="#算法的后续优化" class="headerlink" title="算法的后续优化"></a>算法的后续优化<a id="more"></a></h3><hr>
-<ul>
-<li><p>Bitmap中加载函数 decodeStream()和decodeResource()的区别</p>
-<p>之前加载用的函数一直是decodeResource()，导致图片处理速度一直很慢，让我一度认为是SIFT算法本身的问题，但是其实不是。</p>
-<p>decodeStream()和decodeResource()，这两个api的最大区别在于最后解析出来的Options的inDensity和inTargetDensity（图像密度），即前一个decodeResource会以bitmap的密度做为绘制密度，而decodeStream直接以屏幕默认密度做为绘制密度。所以如果当图片密度远大于屏幕密度时会导致decodeResource解析出来的Bitmap很大，导致机器很卡。</p>
-<p>所以当我换成decodeStream()时匹配速度明显蹭的一下就上去了，解决了一个很要紧的问题。</p>
-</li>
-</ul>
+        <h4 id="部署FLASK项目到阿里云服务器"><a href="#部署FLASK项目到阿里云服务器" class="headerlink" title="部署FLASK项目到阿里云服务器"></a>部署FLASK项目到阿里云服务器<a id="more"></a></h4><hr>
+<p><strong>nginx的安装</strong></p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">apt install nginx</span><br></pre></td></tr></table></figure>
+<p>确保80端口是开放的。（阿里云是配置网络安全组）</p>
+<p>安装完成后输入服务器公网ip地址，出现“Welcome to nginx”字样，说明安装成功。</p>
 <hr>
-<ul>
-<li><p>RANSAC的小优化</p>
-<p>之前两张图片的评价指标是RANSAC提纯后的match中最小的distance，但是在测试中发现，最小值作为评价指标有时候并不准确，于是便改用平均值的办法。</p>
-<center>
-  <table border="1">
-      <tr>
-          <th>建筑物</th>
-          <th>distance</th>
-      </tr>
-      <tr>
-          <td>图书馆2和图书馆1</td>
-          <td> 0.04026</td>
-      </tr>
-      <tr>
-          <td>男生楼1和图书馆1</td>
-          <td> 0.0735</td>
-      </tr>
-      <tr>
-          <td>体育馆1和图书馆1</td>
-          <td> 0.0767</td>
-      </tr>
-      <tr>
-          <td>一教和图书馆1</td>
-          <td> 0.0735</td>
-      </tr>
-  </table>
-</center>
-
-<p>距离越小越好，从测试的几组样例来看，效果还是不错的。</p>
-</li>
-</ul>
+<p><strong>虚拟环境配置</strong></p>
+<p>安装虚拟环境管理包</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">pip install virtualenvwrapper</span><br></pre></td></tr></table></figure>
+<p>虚拟环境配置</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line">#在根目录创建bashrc文件</span><br><span class="line">vi .bashrc</span><br><span class="line">#添加如下内容</span><br><span class="line">export WORKON_HOME&#x3D;$HOME&#x2F;.virtualenvs</span><br><span class="line">VIRTUALENVWRAPPER_PYTHON&#x3D;&#x2F;usr&#x2F;bin&#x2F;python3</span><br><span class="line">source &#x2F;usr&#x2F;local&#x2F;bin&#x2F;virtualenvwrapper.sh</span><br><span class="line">#执行命令</span><br><span class="line">source ~&#x2F;.bashrc</span><br><span class="line">#创建虚拟环境,名称为test_env</span><br><span class="line">mkdirtualenv -- python&#x3D;&#x2F;usr&#x2F;bin&#x2F;python3 test_env</span><br></pre></td></tr></table></figure>
 <hr>
+<p><strong>进入虚拟环境并部署仓库代码</strong></p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line">cd .virtualenvs</span><br><span class="line">workon test_env</span><br><span class="line">cd &#x2F;srv</span><br><span class="line">mkdir test 创建保存仓库的文件夹</span><br><span class="line">git init</span><br><span class="line">git remote add origin+仓库网址</span><br><span class="line">git pull origin master 拉取master分支</span><br></pre></td></tr></table></figure>
+<hr>
+<p><strong>uwsgi</strong></p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br></pre></td><td class="code"><pre><span class="line">#创建uwsgin文件</span><br><span class="line">touch uwsgi.ini</span><br><span class="line">#写入如下内容</span><br><span class="line">[uwsgi]</span><br><span class="line"></span><br><span class="line">#项目路径</span><br><span class="line">chdir   &#x3D; &#x2F;srv&#x2F;test&#x2F;</span><br><span class="line">#flask的uwsgi文件</span><br><span class="line">wsgi-file       &#x3D; &#x2F;srv&#x2F;test&#x2F;app.py</span><br><span class="line">#回调的app对象</span><br><span class="line">callable        &#x3D; app</span><br><span class="line">#python虚拟环境路径</span><br><span class="line">home    &#x3D; &#x2F;root&#x2F;.virtualenvs&#x2F;test_env</span><br><span class="line"></span><br><span class="line">#进程相关设置</span><br><span class="line">#主进程</span><br><span class="line">master  &#x3D;true</span><br><span class="line">#最大数量的工作进程</span><br><span class="line">processes       &#x3D;10</span><br><span class="line"></span><br><span class="line">http    &#x3D; :1426</span><br><span class="line"></span><br><span class="line"></span><br><span class="line">#开启uwsgi服务</span><br><span class="line">uwsgi --ini uwsgi.ini</span><br></pre></td></tr></table></figure>
+<hr>
+<p><strong>关于uwsgi的关闭</strong></p>
+<p>开启了uwsgi服务后进程会一直存在，关掉终端也是如此。</p>
+<p>一个关闭的方法是杀死端口进程</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">sudo fuser -k 1426&#x2F;tcp</span><br></pre></td></tr></table></figure>
+<p>另一个方法是</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line">创建pid文件</span><br><span class="line">touch uwsgi.pid</span><br><span class="line"></span><br><span class="line">在uwsgi.ini文件中添加pid文件的路径</span><br><span class="line">pidfile&#x3D;%(chdir)&#x2F;uwsgi.pid</span><br><span class="line"></span><br><span class="line">执行命令停止服务</span><br><span class="line">uwsgi --stop uwsgi.pid</span><br></pre></td></tr></table></figure>
 
     </article>
     <!-- license  -->
@@ -454,17 +437,12 @@ height:50vh;
     <ul class="post-paginator">
         <li class="next">
             
-                <div class="nextSlogan">Next Post</div>
-                <a href= "/2021/01/27/2021-1-27/" title= "图像特征匹配开发手记Vol_4">
-                    <div class="nextTitle">图像特征匹配开发手记Vol_4</div>
-                </a>
-            
         </li>
         <li class="previous">
             
                 <div class="prevSlogan">Previous Post</div>
-                <a href= "/2021/01/24/2021-1-24/" title= "图像特征匹配开发手记Vol_2">
-                    <div class="prevTitle">图像特征匹配开发手记Vol_2</div>
+                <a href= "/2021/02/26/2021-2-26/" title= "出分前的随笔">
+                    <div class="prevTitle">出分前的随笔</div>
                 </a>
             
         </li>
